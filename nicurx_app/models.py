@@ -1,24 +1,17 @@
 from django.db import models
 
-
 # Create your models here.
-
-
 class Medication(models.Model):
 
     #List of choices for major value in database, human readable name
-    MAJOR = (
-    ('CSCI-BS', 'BS in Computer Science'),
-    ('CPEN-BS', 'BS in Computer Engineering'),
-    ('BIGD-BI', 'BI in Game Design and Development'),
-    ('BICS-BI', 'BI in Computer Science'),
-    ('BISC-BI', 'BI in Computer Security'),
-    ('CSCI-BA', 'BA in Computer Science'),
-    ('DASE-BS', 'BS in Data Analytics and Systems Engineering')
+    CalculationUnit = (
+    ('KG', 'Kilograms'),
+    ('BSA', 'Body Mass Index'),
+    ('None', 'None'),
     )
-    name = models.CharField(max_length=200)
+    medication_name = models.CharField(max_length=200)
     email = models.CharField("UCCS Email", max_length=200)
-    major = models.CharField(max_length=200, choices=MAJOR, blank = True)
+    calculation_unit = models.CharField(max_length=200, choices=CalculationUnit, blank = False)
 
     #Define default String to return the name for representing the Model object."
     def __str__(self):
