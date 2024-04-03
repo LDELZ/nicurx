@@ -1,0 +1,69 @@
+{% load static %}
+{% load django_bootstrap5 %}
+
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {% bootstrap_messages %}
+    <style>
+      body{
+      background-color: #f1deed;
+      color: #1b425c;
+    }
+  
+   <title>UCCS CS Students</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <title>Bootstrap demo</title>
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+ </head>
+</style>
+
+ <body>
+
+     <!-- Navbar-->
+     <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <img src="{% static 'images/logo_alpha.png' %}" width="50" height="50">
+       <div class="container-fluid">
+         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+           <span class="navbar-toggler-icon"></span>
+         </button>
+         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+           <div class="navbar-nav">
+             <!--  {% url 'index' %}  is defined in url path to dynamically create url -->
+             <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+             {% if user.is_authenticated %}
+               
+             {% else %}
+               <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+             {% endif %}
+           </div>
+         </div>
+       </div>
+     </nav>
+
+
+       <div class="col-sm-10">
+         <!-- add block content from html template -->
+         {% block content %}
+         {% endblock %}
+       </div>
+     </div>
+   </div>
+ </body>
+
+ <footer style="position: fixed; left: 0; bottom: 0; width: 100%; background-color: #333; color: #fff; text-align: center; padding: 20px 0;">
+  <p>NICURx Additional Links</p>
+  <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+    <div style="padding-left: 60px;">
+      <a href="#link1" style="color: #fff;">Contact Us</a>
+  </div>
+    <a href="/disclaimer/" style="color: #fff;">Disclaimer</a>
+    <div style="padding-right: 60px;">
+      <a href="/accessibility/" style="color: #fff;">Accessibility</a>
+  </div>
+</div>
+</footer>
+</html>
