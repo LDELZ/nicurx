@@ -10,3 +10,9 @@ def accessibility_view(request):
 
 def disclaimer_view(request):
     return render(request, 'nicurx_app/disclaimer.html')
+
+def supervisor_login_view(request):
+    return render(request, 'nicurx_app/supervisor_login.html')
+
+def contact_info_view(request):
+    return render(request, 'nicurx_app/contact_info.html')

@@ -1,0 +1,25 @@
+<!-- inherit from base.html-->
+{% extends "nicurx_app/base_template.html" %}
+{% load static %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+
+<div style="text-align: center;">
+    <br><img src="{% static 'images/brand_alpha.png' %}" width="500" height="100" style="display: block; margin: 0 auto;">
+    <br>
+    <h1><strong>Contact Information</strong></h1>
+</div>
+<br>
+<div class="outerDiv">
+    <div class="myDiv">
+        <span style="color: black;">
+        <ul>
+        <li>Site Developer: Luke Delzer</li>
+        <li>Email: ldelzer@uccs.edu</li>
+        <li>Phone: 719-555-5555</li>
+        </ul> 
+    </div>
+</div>
+<br><a href="{% url 'index' %}" class="btn btn-primary custom-btn-primary">Back</a>
+{% endblock %}

@@ -1,6 +1,5 @@
 from django.urls import path
 from django.contrib import admin
-from .views import accessibility_view, disclaimer_view
 from . import views
 
 urlpatterns = [
@@ -9,8 +8,10 @@ urlpatterns = [
 # views.index is the function defined in views.py
 # name='index' parameter is to dynamically create url
 # example in html <a href="{% url 'index' %}">Home</a>.
-    path('', views.index, name='index'),
-    path('admin/', admin.site.urls),
-    path('accessibility/', accessibility_view, name='accessibility'),
-    path('disclaimer/', disclaimer_view, name='disclaimer'),
+path('', views.index, name='index'),
+path('admin/', admin.site.urls),
+path('accessibility/', views.accessibility_view, name='accessibility'),
+path('disclaimer/', views.disclaimer_view, name='disclaimer'),
+path('supervisor_login/', views.supervisor_login_view, name='supervisor_login'),
+path('contact_info/', views.contact_info_view, name='supervisor_login'),
 ]

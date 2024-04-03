@@ -6,32 +6,27 @@
 {% block content %}
 
 <div style="text-align: center;">
-    <img src="{% static 'images/brand_alpha.png' %}" width="475" height="100" style="display: block; margin: 0 auto;">
+    <br>
+    <img src="{% static 'images/brand_alpha.png' %}" width="500" height="100" style="display: block; margin: 0 auto;">
     <br>
     <h1><strong>Accessibility Practices</strong></h1>
 </div>
-
-    <ul class="list-group">
-    <ul>
-<br><style>
-    .myDiv {
-        border: 4px outset #1b425c;
-        background-color: #F7F7F7;    
-        text-align: left; 
-    }
-    </style>
-    </head>
-    
-    <body>
+<br>
+<div class="outerDiv"> 
         <div class="myDiv">
-            <span style="color: black;">
+            <span class="textColor">
                 <p>NICURx takes accessibility seriously when it comes to designing our web app. NICURx uses a wide array of 
                     design features to ensure that our technology is inclusive. Designed to be used by all users with any range 
                     of abilities, NICURx emphasizes an inclusive design philosophy that ensures accessibility, usability, and 
                     convenience are at the core of its functionality. We encourage anyone who finds this app inaccessible to
-                    submit email us using the 'Contact Us' link below. The following practices are implemented within this web app.</p>
+                    submit email us using the 'Contact Us' link below. The following practices are implemented within this web app.
+                </p>
+            </span>
         </div>
+    </div> 
+</div>
 <br>
+<div class="outerDiv">
     <div class="myDiv">
         <span style="color: black;">
         <h2>Accessibility Design Practices</h2>
@@ -46,4 +41,6 @@
         <li>Linear and logical layout</li>
         </ul> 
     </div>
+</div>
+<br><a href="{% url 'index' %}" class="btn btn-primary custom-btn-primary">Back</a>
 {% endblock %}
