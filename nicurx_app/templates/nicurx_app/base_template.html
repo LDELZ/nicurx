@@ -28,6 +28,8 @@
            <div class="navbar-nav">
              <!--  {% url 'index' %}  is defined in url path to dynamically create url -->
              <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
+             <a class="nav-link active" aria-current="page" href="{% url 'patient_grid' %}">Active Patients</a>
+             <a class="nav-link active" aria-current="page" href="{% url 'patient_grid' %}">Patient History</a>
              {% if user.is_authenticated %}
                
              {% else %}

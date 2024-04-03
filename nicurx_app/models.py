@@ -1,24 +1,39 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Medication(models.Model):
 
-    #List of choices for major value in database, human readable name
     CalculationUnit = (
     ('KG', 'Kilograms'),
     ('BSA', 'Body Mass Index'),
     ('None', 'None'),
     )
     medication_name = models.CharField(max_length=200)
-    email = models.CharField("UCCS Email", max_length=200)
-    calculation_unit = models.CharField(max_length=200, choices=CalculationUnit, blank = False)
+    calculation_unit = models.CharField(max_length=200, choices=CalculationUnit, blank = False, default=None)
 
-    #Define default String to return the name for representing the Model object."
     def __str__(self):
-        return self.name
+        return self.medication_name
     
-    #Returns the URL to access a particular instance of MyModelName.
-    #if you define this method then Django will automatically
-    # add a "View on Site" button to the model's record editing screens in the Admin site
     def get_absolute_url(self):
         return reverse('student-detail', args=[str(self.id)])
+    
+class MedicalRecord(models.Model):
+
+    def get_absolute_url(self):
+        return reverse('student-detail', args=[str(self.id)])
+    
+class Patient(models.Model):
+    is_active = models.BooleanField(default = False)
+    first_name = models.CharField(max_length=200, default=False)
+    last_name = models.CharField(max_length=200, default=False)
+    id_number = models.IntegerField(null=True)
+    guardian_name = models.CharField(max_length=200)
+    date_of_birth = models.DateField()
+    weight = models.FloatField(help_text="Weight in kilograms", default=1.0)
+    height = models.FloatField(help_text="Height in centimeters", default=1.0)
+    def __str__(self):
+        return self.last_name
+
+    def get_absolute_url(self):
+        return reverse('patient-detail', args=[str(self.id)])

@@ -1,0 +1,50 @@
+<!-- inherit from base.html-->
+{% extends "nicurx_app/base_template.html" %}
+{% load static %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+<div style="text-align: center;">
+    <br><h1><strong>Current Patients</strong></h1>
+</div>
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-auto">
+            <a href="/patient_grid/" class="btn btn-primary custom-btn-primary">Sort by Name</a>
+        </div>
+        <div class="col-auto">
+            <a href="/patient_grid_ID/" class="btn btn-primary custom-btn-primary">Sort by ID</a>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container">
+    <strong>
+      <div class="row">
+        <div class="col">Patient Name</div>
+        <div class="col">Patient ID</div>
+        <div class="col">Date of Birth</div>
+        <div class="col">Guardian Name</div>
+        <div class="col">Weight (kg)</div>
+        <div class="col">Height (cm)</div>
+      </div>
+    </strong>
+  </div>
+
+<br>
+        <div class="container">
+            {% for i in active_patients %}
+              <div class="row">
+                <div class="col">{{ i.last_name }}, {{ i.first_name }}</div>
+                <div class="col">{{ i.id_number }}</div>
+                <div class="col">{{ i.date_of_birth }}</div>
+                <div class="col">{{ i.guardian_name }}</div>
+                <div class="col">{{ i.weight }}</div>
+                <div class="col">{{ i.height }}</div>
+              </div>
+            {% endfor %}
+          </div>
+          
+    <ul>
+
+{% endblock content %}

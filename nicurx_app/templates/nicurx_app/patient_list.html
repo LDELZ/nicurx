@@ -1,0 +1,26 @@
+<!-- inherit from base.html-->
+{% extends "nicurx_app/base_template.html" %}
+{% load static %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+<div style="text-align: center;">
+    <br><h1><strong>Current Patients</strong></h1>
+</div>
+
+<br>
+    <ul class="list-group">
+        {% for i in active_patients %}
+        <div class="card custom-card">
+            <h5 class="card-header custom-card-header">{{i.last_name}}, {{i.first_name }}</h5>
+            <div class="card-body">
+                <h5 class="card-title">Special title treatment</h5>
+                <p class="card-text">With supporting text below as a natural lead-in to additional content.
+                    <a href="" class="btn btn-primary custom-btn-primary">View</a>
+                </p>
+            </div>
+        </div>
+        {% endfor %}          
+    <ul>
+
+{% endblock content %}

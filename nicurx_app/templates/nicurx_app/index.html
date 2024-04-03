@@ -22,20 +22,8 @@
 
 <div style="text-align: center;">
     <br><h1><strong>Begin by selecting your role below</strong></h1>
-    <br><a href="{{ i.portfolio.get_absolute_url}}" class="btn btn-primary custom-btn-primary">For Practitioners</a>
+    <br><a href="/patient_list/" class="btn btn-primary custom-btn-primary">For Practitioners</a>
     <br><br><a href="/supervisor_login/" class="btn btn-primary custom-btn-primary">Supervisor Login</a>
 </div>
-
-<br>
-    <ul class="list-group">
-        {% for i in student_active_portfolios %}
-            <li class="list-group-item"  style="background-color: #FCFFEB">Name: {{i.name}}
-                <p><strong>Portfolio: {{ i.portfolio.title }}
-                    <a href="{{ i.portfolio.get_absolute_url}}" class="btn btn-primary custom-btn-primary">View</a>             
-                    
-                </strong></p>
-            </li>
-        {% endfor %}
-    <ul>
 
 {% endblock content %}
