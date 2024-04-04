@@ -1,0 +1,39 @@
+{% extends 'nicurx_app/base_template.html' %}
+{% block content %}
+<h1><strong>Patient Profile</strong></h1>
+<div class="card custom-card">
+    {% if not patient.is_active %}
+        {% with status="Inactive" %}
+        <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Profile Status: {{ status }}</h5>
+            <a href="{{ i.get_absolute_url }}" class="btn btn-primary custom-btn-primary">Edit</a>
+        </div>        
+        {% endwith %}
+    {% else %}
+        {% with status="Active" %}
+        <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Profile Status: {{ status }}</h5>
+            <a href="{{ i.get_absolute_url }}" class="btn btn-primary custom-btn-primary">Edit</a>
+        </div>
+        {% endwith %}
+    {% endif %}
+    <div class="card-body" style="text-align: left;">
+        <h5 class="card-title"><strong>Personal Information:</strong></h5>
+        <p class="card-text">
+                 <ul style="list-style-type: none">
+                    <li><strong>First Name: </strong>{{ patient.first_name }}</li>
+                    <li><strong>Last Name: </strong>{{ patient.last_name }}</li>
+                    <li><strong>ID Number: </strong>{{ patient.id_number }}</li>
+                    <li><strong>Date of Birth: </strong>{{ patient.date_of_birth }}</li>
+                    <li><strong>Guardian Name: </strong>{{ patient.guardian_name }}</li>
+                </ul>
+        <h5 class="card-title"><strong>Body Metrics:</strong></h5>
+            <ul style="list-style-type: none">
+                <li><strong>Weight (kg): </strong>{{ patient.weight}}</li>
+                <li><strong>Height (cm): </strong>{{ patient.height }}</li>
+                <li><strong>Body Surface Area (square meters): </strong>{{ patient.calculate_bsa|floatformat:2 }}</li>
+            </ul>
+        </p>
+    </div>
+</div>
+{% endblock %}

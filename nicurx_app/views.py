@@ -35,3 +35,9 @@ def patient_grid_view_ID(request):
    active_patients = Patient.objects.filter(is_active=True).order_by('id_number')
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_grid.html', {'active_patients':active_patients})
+
+class PatientDetailView(generic.DetailView):
+   model = Patient
+   def get_context_data(self, **kwargs):
+      context = super().get_context_data(**kwargs)
+      return context

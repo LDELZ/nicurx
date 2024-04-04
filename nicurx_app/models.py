@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+import math
 
 # Create your models here.
 class Medication(models.Model):
@@ -32,6 +33,11 @@ class Patient(models.Model):
     date_of_birth = models.DateField()
     weight = models.FloatField(help_text="Weight in kilograms", default=1.0)
     height = models.FloatField(help_text="Height in centimeters", default=1.0)
+    def calculate_bsa(self):
+        if self.weight > 0 and self.height > 0:
+            return math.sqrt((self.height * self.weight) / 3600)
+        else:
+            return 0
     def __str__(self):
         return self.last_name
 
