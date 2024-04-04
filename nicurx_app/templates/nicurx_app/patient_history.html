@@ -5,15 +5,15 @@
 <!-- Replace block content in base_template.html -->
 {% block content %}
 <div style="text-align: center;">
-    <br><h1><strong>Current Patients</strong></h1>
+    <br><h1><strong>Historical Patients</strong></h1>
 </div>
 <div class="container">
     <div class="row justify-content-between">
         <div class="col-auto">
-            <a href="/patient_grid/" class="btn btn-primary custom-btn-primary">Sort by Name</a>
+            <a href="/patient_history/" class="btn btn-primary custom-btn-primary">Sort by Name</a>
         </div>
         <div class="col-auto">
-            <a href="/patient_grid_ID/" class="btn btn-primary custom-btn-primary">Sort by ID</a>
+            <a href="/patient_history_ID/" class="btn btn-primary custom-btn-primary">Sort by ID</a>
         </div>
     </div>
 </div>
@@ -44,7 +44,7 @@
                   <div class="col text-start">{{ i.height }}</div>
                   <div class="col text-start">{{ i.calculate_bsa|floatformat:2 }}</div>
               </div>
-            {% empty %}<div class="">There are no current patients</div>
+        {% empty %} <div class="">There are no current patients</div>
       {% endfor %}
   </div>
           

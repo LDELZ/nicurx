@@ -22,7 +22,7 @@ def contact_info_view(request):
     return render(request, 'nicurx_app/contact_info.html')
 
 def patient_list_view(request):
-   active_patients = Patient.objects.filter(is_active=True)
+   active_patients = Patient.objects.filter(is_active=True).order_by('last_name')
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_list.html', {'active_patients':active_patients})
 
@@ -35,6 +35,16 @@ def patient_grid_view_ID(request):
    active_patients = Patient.objects.filter(is_active=True).order_by('id_number')
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_grid.html', {'active_patients':active_patients})
+
+def patient_grid_view_all(request):
+   active_patients = Patient.objects.filter(is_active=False).order_by('last_name')
+   print("active patient query set", active_patients)
+   return render( request, 'nicurx_app/patient_history.html', {'active_patients':active_patients})
+
+def patient_grid_view_all_ID(request):
+   active_patients = Patient.objects.filter(is_active=False).order_by('id_number')
+   print("active patient query set", active_patients)
+   return render( request, 'nicurx_app/patient_history.html', {'active_patients':active_patients})
 
 class PatientDetailView(generic.DetailView):
    model = Patient
@@ -57,3 +67,41 @@ def updatePatient(request, patient_id):
       form = PatientForm(instance=patient)
    context = {'form': form, 'patient': patient}
    return render(request, 'nicurx_app/update_form.html', context)
+
+def createPatient(request):
+   
+   # Display the default form the first time it is being requested (used for creation)
+   form = PatientForm()
+
+   # Test if the form submission is to POST
+   if request.method == 'POST':
+
+      # Create a new dictionary with form data and portfolio_id
+      form = PatientForm(request.POST)
+
+      # Test if the form contents are valid
+      if form.is_valid():
+
+         # Save the form without committing to the database
+         patient = form.save()
+
+
+         # Redirect back to the portfolio detail page
+         return redirect('patient-detail', patient.pk)
+      
+   # Redirect back to the update_form URL
+   context = {'form': form}
+   return render(request, 'nicurx_app/update_form.html', context)
+
+# View to generate a form to delete a patient
+def dischargePatient(request, patient_id):
+
+   patient = Patient.objects.get(pk=patient_id)
+   if request.method == 'POST':
+      patient.is_active = False
+      patient.save()
+      return redirect('patient_list')
+   
+   context = {'patient': patient}
+   # Redirect back to the portfolio detail page
+   return render(request, 'nicurx_app/patient_discharge.html', context)

@@ -14,7 +14,9 @@
             <table>
             {{ form.as_table }}
             </table>
+            <br>
             <input type="submit" name="Submit" value="Submit">
+            <a href="{% url 'patient_list' %}" class="btn btn-primary custom-btn-primary" style="padding-top: 3px; padding-bottom: 3px;">Cancel</a>
         </form>
     
     </p>

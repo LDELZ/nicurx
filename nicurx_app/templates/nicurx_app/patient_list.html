@@ -6,7 +6,7 @@
 {% block content %}
 <div style="text-align: center;">
     <br><h1><strong>Current Patients</strong></h1>
-    <a href="" class="btn btn-primary custom-btn-primary">New Patient</a>
+    <br><a href="{% url 'create-patient' %}" class="btn btn-primary custom-btn-primary">New Patient</a>
 </div>
 
 <br>
@@ -14,13 +14,20 @@
         {% for patient in active_patients %}
         
         <div class="card custom-card">
-            
-                <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ patient.last_name }}, {{ patient.first_name }}&nbsp;&nbsp;&nbsp;&nbsp;
-                        ID: {{ patient.id_number }}&nbsp;&nbsp;&nbsp;&nbsp;DOB: {{ patient.date_of_birth }}</h5>
-                    <a href="{{ patient.get_absolute_url }}" class="btn btn-primary custom-btn-primary">View</a>
-                </div>        
-            <div class="card-body" style="text-align: left;">
+          
+            <div class="card-header custom-card-header style=text-align: left;">
+                <h5 class="mb-0">
+                    <div class="container">
+                    <div class="row">
+                        <div class="col text-start">{{ patient.last_name }}, {{ patient.first_name }}</div>
+                        <div class="col text-start">ID: {{ patient.id_number }}</div>
+                        <div class="col text-start">DOB: {{ patient.date_of_birth }}</div>
+                        <div class="col text-end"><a href="{{ patient.get_absolute_url }}" class="btn btn-primary custom-btn-secondary">View</a></div>
+                        <div class="col"><a href="{% url 'discharge-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Discharge</a></div>
+                </h5>
+            </div>
+              
+            <div class="card-body" style="text-align: left; color: black;">
                 <p class="card-text">
                     <div class="container">
                             <div class="row">
@@ -32,6 +39,7 @@
                 </p>
             </div>
         </div>
+        {% empty %}<div class="">There are no current patients</div>
         {% endfor %}          
     <ul>
 

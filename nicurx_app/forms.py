@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Medication, Patient, MedicalRecord
+from .models import Medication, Patient, MedicationProfile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 

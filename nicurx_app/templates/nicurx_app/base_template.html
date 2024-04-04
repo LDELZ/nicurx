@@ -8,6 +8,7 @@
 <!-- Header -->
 <head>
   {% load static %}
+  <link rel="shortcut icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>NICURx</title>
@@ -17,6 +18,7 @@
 
 <!-- Body -->
 <body>
+  <div class="fixed-background"></div>
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar-color">
     <img src="{% static 'images/logo_white.png' %}" width="50" height="50">
@@ -29,7 +31,7 @@
              <!--  {% url 'index' %}  is defined in url path to dynamically create url -->
              <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
              <a class="nav-link active" aria-current="page" href="{% url 'patient_grid' %}">Active Patients</a>
-             <a class="nav-link active" aria-current="page" href="{% url 'patient_grid' %}">Patient History</a>
+             <a class="nav-link active" aria-current="page" href="{% url 'patient_history' %}">Patient History</a>
              {% if user.is_authenticated %}
                
              {% else %}

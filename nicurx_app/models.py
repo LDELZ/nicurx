@@ -17,17 +17,17 @@ class Medication(models.Model):
         return self.medication_name
     
     def get_absolute_url(self):
-        return reverse('student-detail', args=[str(self.id)])
+        return reverse('medication-detail', args=[str(self.id)])
     
-class MedicalRecord(models.Model):
+class MedicationProfile(models.Model):
 
     def get_absolute_url(self):
-        return reverse('student-detail', args=[str(self.id)])
+        return reverse('medication-profile-detail', args=[str(self.id)])
     
 class Patient(models.Model):
     is_active = models.BooleanField(default = False)
-    first_name = models.CharField(max_length=200, default=False)
-    last_name = models.CharField(max_length=200, default=False)
+    first_name = models.CharField(max_length=200)
+    last_name = models.CharField(max_length=200)
     id_number = models.IntegerField(null=True)
     guardian_name = models.CharField(max_length=200)
     date_of_birth = models.DateField()
