@@ -26,6 +26,16 @@ def patient_list_view(request):
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_list.html', {'active_patients':active_patients})
 
+def profile_grid_view(request):
+   profiles = MedicationProfile.objects.filter(is_active=True).order_by('title')
+   print("profile query set", profiles)
+   return render( request, 'nicurx_app/medication_profiles.html', {'profiles':profiles})
+
+def profile_grid_view_ID(request):
+   profiles = MedicationProfile.objects.filter(is_active=True).order_by('id_number')
+   print("profile query set", profiles)
+   return render( request, 'nicurx_app/medication_profiles.html', {'profiles':profiles})
+
 def patient_grid_view(request):
    active_patients = Patient.objects.filter(is_active=True).order_by('last_name')
    print("active patient query set", active_patients)
@@ -105,3 +115,18 @@ def dischargePatient(request, patient_id):
    context = {'patient': patient}
    # Redirect back to the portfolio detail page
    return render(request, 'nicurx_app/patient_discharge.html', context)
+
+class ProfileDetailView(generic.DetailView):
+   model = MedicationProfile
+   # We need to extend the context of 
+   # Overridden method to get more context to the template, kwargs gives the function an unknown number of key-value pairs
+   def get_context_data(self, **kwargs):
+
+      # Get the context data of the superclass (DetailView) for all keywords in the dictionary
+      context = super().get_context_data(**kwargs)
+
+      # Assign the portfolio current portfolio key to a variable portfolio
+      # Use that portfolio key to access the projects associated with it to define a new context 'projects' 
+      profile = context['object']
+      context['medications'] = profile.medications.all()
+      return context

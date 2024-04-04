@@ -1,0 +1,8 @@
+{% extends 'nicurx_app/base_template.html' %}
+{% block content %}
+<h1><strong>Student Name: </strong>{{ student.name }}</h1>
+
+<p><strong>Email:</strong> {{ student.email }}</p>
+<p><strong>Major:</strong> {{ student.major }}</p>
+<p><strong>Portfolio: <a href="{{ student.portfolio.get_absolute_url}}" style="color: #2C51A0;">{{ student.portfolio.title }}</a>&nbsp;&nbsp;
+{% endblock %}

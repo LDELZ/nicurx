@@ -23,4 +23,7 @@ path('patient/<int:pk>', views.PatientDetailView.as_view(), name='patient-detail
 path('patient/<int:patient_id>/', views.updatePatient, name='update-patient'),
 path('patient/create_patient/', views.createPatient, name='create-patient'),
 path('patient/discharge_patient/<int:patient_id>', views.dischargePatient, name='discharge-patient'),
+path('profile_grid/', views.profile_grid_view, name='profile_grid'),
+path('profile_grid_ID/', views.profile_grid_view_ID, name='profile_grid_ID'),
+path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail'),
 ]

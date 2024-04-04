@@ -1,0 +1,45 @@
+<!-- inherit from base.html-->
+{% extends "nicurx_app/base_template.html" %}
+{% load static %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+<div style="text-align: center;">
+    <br><h1><strong>Medication Profiles</strong></h1>
+</div>
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-auto">
+            <a href="/profile_grid/" class="btn btn-primary custom-btn-primary">Sort by Name</a>
+        </div>
+        <div class="col-auto">
+            <a href="/profile_grid_ID/" class="btn btn-primary custom-btn-primary">Sort by ID</a>
+        </div>
+    </div>
+</div>
+<br>
+<div class="container">
+      <div class="row" style="background-color: #1b425c; color: white">
+        <div class="col text-start">Profile Name</div>
+        <div class="col text-start">Profile ID</div>
+        <div class="col text-start">Number of Medications</div>
+      </div>
+  </div>
+  <div class="container">
+    {% for i in profiles %}
+    {% if forloop.counter|divisibleby:2 %}
+        <div class="row" style="background-color: #fcffeb;">
+    {% else %}
+        <div class="row" style="background-color: #f2f2f2;">
+    {% endif %}
+            <div class="col text-start"><a href="{% url 'profile-detail' i.id %}">{{ i.title }}</a></div>
+            <div class="col text-start">{{ i.id_number }}</div>
+            <div class="col text-start">{{ i.number_medications }}</div>
+        </div>
+      {% empty %}<div class="">There are no current profiles</div>
+{% endfor %}
+</div>
+          
+    <ul>
+
+{% endblock content %}

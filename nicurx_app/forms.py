@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 class PatientForm(ModelForm):
         class Meta:
                 model = Patient
-                fields =('is_active', 'first_name', 'last_name', 'id_number', 'guardian_name', 'date_of_birth', 'weight', 'height')
+                fields =('is_active', 'first_name', 'last_name', 'id_number', 'guardian_name', 'date_of_birth', 'weight', 'height', 'medication_profile')
                 widgets = {
                     'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
                 }

@@ -7,7 +7,7 @@
         {% with status="Inactive" %}
         <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Profile Status: {{ status }}</h5>
-            <a href="{% url 'update-patient' patient_id=patient.id patient_id=patient.id %}" class="btn btn-primary custom-btn-primary">Edit</a>
+            <a href="{% url 'update-patient' patient_id=patient.id patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Edit</a>
         </div>        
         {% endwith %}
     {% else %}
@@ -33,6 +33,18 @@
                 <li><strong>Weight (kg): </strong>{{ patient.weight}}</li>
                 <li><strong>Height (cm): </strong>{{ patient.height }}</li>
                 <li><strong>Body Surface Area (square meters): </strong>{{ patient.calculate_bsa|floatformat:2 }}</li>
+            </ul>
+            <h5 class="card-title"><strong>Medication Profile: </strong></h5>
+            <ul style="list-style-type: none">
+                <li><strong>Profile: </strong>{{ patient.medication_profile.title}}</li>
+                <li><strong>Number of Medications: </strong>{{ patient.medication_profile.number_medications }}</li>
+                <li><strong>Active Issues: </strong>0</li>
+            </ul>
+            <h5 class="card-title"><strong>Medication List: </strong></h5>
+            <ul style="list-style-type: none">
+                <li><strong>Profile: </strong>{{ patient.medication_profile.title}}</li>
+                <li><strong>Number of Medications: </strong>{{ patient.height }}</li>
+                <li><strong>Active Issues: </strong>0</li>
             </ul>
         </p>
     </div>
