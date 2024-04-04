@@ -18,4 +18,5 @@ path('patient_list/', views.patient_list_view, name='patient_list'),
 path('patient_grid/', views.patient_grid_view, name='patient_grid'),
 path('patient_grid_ID/', views.patient_grid_view_ID, name='patient_grid_ID'),
 path('patient/<int:pk>', views.PatientDetailView.as_view(), name='patient-detail'),
+path('patient/<int:patient_id>/', views.updatePatient, name='update-patient'),
 ]

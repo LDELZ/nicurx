@@ -6,17 +6,29 @@
 {% block content %}
 <div style="text-align: center;">
     <br><h1><strong>Current Patients</strong></h1>
+    <a href="" class="btn btn-primary custom-btn-primary">New Patient</a>
 </div>
 
 <br>
     <ul class="list-group">
-        {% for i in active_patients %}
+        {% for patient in active_patients %}
+        
         <div class="card custom-card">
-            <h5 class="card-header custom-card-header">{{i.last_name}}, {{i.first_name }}</h5>
-            <div class="card-body">
-                <h5 class="card-title">Special title treatment</h5>
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.
-                    <a href="{{ i.get_absolute_url }}" class="btn btn-primary custom-btn-primary">View</a>
+            
+                <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ patient.last_name }}, {{ patient.first_name }}&nbsp;&nbsp;&nbsp;&nbsp;
+                        ID: {{ patient.id_number }}&nbsp;&nbsp;&nbsp;&nbsp;DOB: {{ patient.date_of_birth }}</h5>
+                    <a href="{{ patient.get_absolute_url }}" class="btn btn-primary custom-btn-primary">View</a>
+                </div>        
+            <div class="card-body" style="text-align: left;">
+                <p class="card-text">
+                    <div class="container">
+                            <div class="row">
+                                <div class="col"><strong>Weight (kg): </strong>{{ patient.weight}} </div>
+                                <div class="col"><strong>Height (cm): </strong>{{ patient.height }}</div>
+                                <div class="col"><strong>Body Surface Area (m^2): </strong>{{ patient.calculate_bsa|floatformat:2 }}</div>
+                              </div>
+                          </div>
                 </p>
             </div>
         </div>
@@ -24,3 +36,4 @@
     <ul>
 
 {% endblock content %}
+

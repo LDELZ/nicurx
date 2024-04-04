@@ -1,0 +1,24 @@
+<!-- inherit from base.html-->
+{% extends 'nicurx_app/base_template.html' %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+<h1><strong>Patient Profile</strong></h1>
+<div class="card custom-card">
+    <div class="card-header custom-card-header d-flex justify-content-between align-items-center">Update Patient Information</div>
+<div class="card-body" style="text-align: left;">
+    <p class="card-text">
+        
+        <form action="" method="POST">
+            {% csrf_token %}
+            <table>
+            {{ form.as_table }}
+            </table>
+            <input type="submit" name="Submit" value="Submit">
+        </form>
+    
+    </p>
+</div>
+</div>
+</div>
+{% endblock %}

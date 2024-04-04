@@ -19,32 +19,35 @@
 </div>
 <br>
 <div class="container">
-    <strong>
-      <div class="row">
-        <div class="col">Patient Name</div>
-        <div class="col">Patient ID</div>
-        <div class="col">Date of Birth</div>
-        <div class="col">Guardian Name</div>
-        <div class="col">Weight (kg)</div>
-        <div class="col">Height (cm)</div>
+      <div class="row" style="background-color: #1b425c; color: white">
+        <div class="col text-start">Patient Name</div>
+        <div class="col text-start">Patient ID</div>
+        <div class="col text-start">Date of Birth</div>
+        <div class="col text-start">Guardian Name</div>
+        <div class="col text-start">Weight (kg)</div>
+        <div class="col text-start">Height (cm)</div>
+        <div class="col text-start">BSA (m2)</div>
       </div>
-    </strong>
   </div>
-
-<br>
         <div class="container">
-            {% for i in active_patients %}
-              <div class="row">
-                <div class="col">{{ i.last_name }}, {{ i.first_name }}</div>
-                <div class="col">{{ i.id_number }}</div>
-                <div class="col">{{ i.date_of_birth }}</div>
-                <div class="col">{{ i.guardian_name }}</div>
-                <div class="col">{{ i.weight }}</div>
-                <div class="col">{{ i.height }}</div>
+          {% for i in active_patients %}
+          {% if forloop.counter|divisibleby:2 %}
+              <div class="row" style="background-color: #fcffeb;">
+          {% else %}
+              <div class="row" style="background-color: #f2f2f2;">
+          {% endif %}
+                  <div class="col text-start"><a href="{{ i.get_absolute_url }}">{{ i.last_name }}, {{ i.first_name }}</a></div>
+                  <div class="col text-start">{{ i.id_number }}</div>
+                  <div class="col text-start">{{ i.date_of_birth }}</div>
+                  <div class="col text-start">{{ i.guardian_name }}</div>
+                  <div class="col text-start">{{ i.weight }}</div>
+                  <div class="col text-start">{{ i.height }}</div>
+                  <div class="col text-start">{{ i.calculate_bsa|floatformat:2 }}</div>
               </div>
-            {% endfor %}
-          </div>
+      {% endfor %}
+  </div>
           
     <ul>
 
+        
 {% endblock content %}

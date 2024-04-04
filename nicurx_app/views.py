@@ -41,3 +41,19 @@ class PatientDetailView(generic.DetailView):
    def get_context_data(self, **kwargs):
       context = super().get_context_data(**kwargs)
       return context
+   
+# View to generate a form to update a portfolio 
+def updatePatient(request, patient_id):
+   patient = Patient.objects.get(pk=patient_id)
+
+   if request.method == 'POST':
+      form = PatientForm(request.POST, instance=patient)
+      if form.is_valid():
+         form.save()
+
+         # Redirect back to the portfolio detail page
+         return redirect('patient-detail', pk=patient_id)
+   else:
+      form = PatientForm(instance=patient)
+   context = {'form': form, 'patient': patient}
+   return render(request, 'nicurx_app/update_form.html', context)
