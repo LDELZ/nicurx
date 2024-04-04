@@ -22,8 +22,11 @@ class MedicationProfile(models.Model):
     #Returns the URL to access a particular instance of MyModelName.
     def get_absolute_url(self):
         return reverse('medication-profile-detail', args=[str(self.id)])
-    
+
+#-----------------------------------------------------------------------------------------------------------------------
 class Patient(models.Model):
+
+    # Patient attributes
     is_active = models.BooleanField(default = True)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
@@ -34,16 +37,20 @@ class Patient(models.Model):
     height = models.FloatField(help_text="Height in centimeters", default=1.0)
     medication_profile = models.OneToOneField(MedicationProfile, on_delete=models.CASCADE, default=None, null=True)
     discharge_date = models.DateTimeField(null=True, blank=True)
+
+    # Patient methods
     def calculate_bsa(self):
         if self.weight > 0 and self.height > 0:
             return math.sqrt((self.height * self.weight) / 3600)
         else:
             return 0
+        
     def __str__(self):
         return self.last_name
 
     def get_absolute_url(self):
         return reverse('patient-detail', args=[str(self.id)])
+#-----------------------------------------------------------------------------------------------------------------------
 
 class Medication(models.Model):
 
