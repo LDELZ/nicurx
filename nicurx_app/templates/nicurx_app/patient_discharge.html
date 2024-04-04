@@ -5,7 +5,8 @@
 {%block content %}
 <br><h2><strong>Are you sure you want to discharge this patient?</strong></h2>
 <h5>This deactivates a patient profile. It will be logged in the patient history.</h5>
-<br><div class="card custom-card">     
+<br>
+<div class="card custom-card" style="margin-bottom: 1rem;">
     <div class="card-header custom-card-header style=text-align: left;">
         <h5 class="mb-0">
             <div class="container">
@@ -13,23 +14,43 @@
                 <div class="col text-start">{{ patient.last_name }}, {{ patient.first_name }}</div>
                 <div class="col text-start">ID: {{ patient.id_number }}</div>
                 <div class="col text-start">DOB: {{ patient.date_of_birth }}</div>
+                <div class="col text-start"></div>
+
         </h5>
     </div>
+      
     <div class="card-body" style="text-align: left; color: black;">
-        <p class="card-text">
-            <div class="container">
-                    <div class="row">
-                        <div class="col"><strong>Weight (kg): </strong>{{ patient.weight}} </div>
-                        <div class="col"><strong>Height (cm): </strong>{{ patient.height }}</div>
-                        <div class="col"><strong>Body Surface Area (m^2): </strong>{{ patient.calculate_bsa|floatformat:2 }}</div>
-                      </div>
-                  </div>
-        </p>
+        <div class="container">
+            <div class="row" style="background-color: #333; color: white">
+              <div class="col text-start">Metrics</div>
+              <div class="col text-start">Medication Details</div>
+              <div class="col text-start">Status</div>
+            </div>
+                    <div class="row" style="background-color: #f2f2f2;">
+                        <div class="col text-start"><strong>Weight (kg): </strong>{{ patient.weight }}</div>
+                        <div class="col text-start"><strong>Med Profile: </strong>{{ patient.medication_profile.title }}</div>
+                        {% if patient.medication_profile.has_issues %}
+                            <div class="col text-start"><strong>Warning </strong></div>
+                        {% else %}
+                            <div class="col text-start"><strong>No issues detected </strong></div>
+                        {% endif %}
+                    </div>
+                    <div class="row" style="background-color: #fffffff;">
+                        <div class="col text-start"><strong>Height (cm): </strong>{{ patient.height}}</div>
+                        <div class="col text-start"><strong>Number Meds: </strong>{{ patient.medication_profile.number_medications }}</div>
+                        <div class="col text-start"></div>
+                    </div>
+                    <div class="row" style="background-color: #f2f2f2;">
+                        <div class="col text-start"><strong>BSA (m^2): </strong>{{ patient.calculate_bsa|floatformat:2 }}</div>
+                        <div class="col text-start"><strong>High Risk? </strong>{{ patient.medication_profile.has_high_risk_med }}</div>
+                        <div class="col text-start"></div>
+                    </div>
     </div>
+</div>
 </div>
 <form method="post">
     {% csrf_token %}
-    <br><a href="{% url 'patient_list' %}" class="btn btn-primary custom-btn-primary" style="padding-top: 3px; padding-bottom: 3px;">Cancel</a>
+    <a href="{% url 'patient_list' %}" class="btn btn-primary custom-btn-primary" style="padding-top: 3px; padding-bottom: 3px;">Cancel</a>
     <input type="submit" name="Submit" value="Submit">
 </form>
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import *
+from django.utils import timezone
 from django.views import generic
 from .forms import PatientForm
 
@@ -53,6 +54,11 @@ def patient_grid_view_all(request):
 
 def patient_grid_view_all_ID(request):
    active_patients = Patient.objects.filter(is_active=False).order_by('id_number')
+   print("active patient query set", active_patients)
+   return render( request, 'nicurx_app/patient_history.html', {'active_patients':active_patients})
+
+def patient_grid_view_all_date(request):
+   active_patients = Patient.objects.filter(is_active=False).order_by('discharge_date')
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_history.html', {'active_patients':active_patients})
 
@@ -109,6 +115,7 @@ def dischargePatient(request, patient_id):
    patient = Patient.objects.get(pk=patient_id)
    if request.method == 'POST':
       patient.is_active = False
+      patient.discharge_date = timezone.now()
       patient.save()
       return redirect('patient_list')
    

@@ -8,9 +8,12 @@ class MedicationProfile(models.Model):
     about = models.TextField(blank = True)
     id_number = models.IntegerField(null=True)
     is_active = models.BooleanField(default = True)
-
+    has_issues = models.BooleanField(default = False)
     def number_medications(self):
         return self.medications.count()
+    
+    def has_high_risk_med(self):
+        return self.medications.filter(high_risk=True).exists()
     
     #Define default String to return the name for representing the Model object."
     def __str__(self):
@@ -30,6 +33,7 @@ class Patient(models.Model):
     weight = models.FloatField(help_text="Weight in kilograms", default=1.0)
     height = models.FloatField(help_text="Height in centimeters", default=1.0)
     medication_profile = models.OneToOneField(MedicationProfile, on_delete=models.CASCADE, default=None, null=True)
+    discharge_date = models.DateTimeField(null=True, blank=True)
     def calculate_bsa(self):
         if self.weight > 0 and self.height > 0:
             return math.sqrt((self.height * self.weight) / 3600)

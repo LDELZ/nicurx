@@ -23,10 +23,12 @@
         <div class="col text-start">Patient Name</div>
         <div class="col text-start">Patient ID</div>
         <div class="col text-start">Date of Birth</div>
-        <div class="col text-start">Guardian Name</div>
         <div class="col text-start">Weight (kg)</div>
         <div class="col text-start">Height (cm)</div>
         <div class="col text-start">BSA (m2)</div>
+        <div class="col text-start"># Meds</div>
+        <div class="col text-start">High Risk?</div>
+        <div class="col text-start">Status</div>
       </div>
   </div>
         <div class="container">
@@ -39,10 +41,18 @@
                   <div class="col text-start"><a href="{{ i.get_absolute_url }}">{{ i.last_name }}, {{ i.first_name }}</a></div>
                   <div class="col text-start">{{ i.id_number }}</div>
                   <div class="col text-start">{{ i.date_of_birth }}</div>
-                  <div class="col text-start">{{ i.guardian_name }}</div>
                   <div class="col text-start">{{ i.weight }}</div>
                   <div class="col text-start">{{ i.height }}</div>
                   <div class="col text-start">{{ i.calculate_bsa|floatformat:2 }}</div>
+                  <div class="col text-start">{{ i.medication_profile.number_medications }}</div>
+                  <div class="col text-start">{{ i.medication_profile.has_high_risk_med }}</div>
+                  <div class="col text-start">
+                    {% if i.medication_profile.has_issues %}
+                        <img src="{% static 'images/warning.png' %}" alt="Issues Detected" width="20" height="20">
+                    {% else %}
+                        <img src="{% static 'images/ok.png' %}" alt="No Issues" width="20" height="20">
+                    {% endif %}
+                </div>
               </div>
             {% empty %}<div class="">There are no current patients</div>
       {% endfor %}

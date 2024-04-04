@@ -30,8 +30,9 @@
            <div class="navbar-nav">
              <!--  {% url 'index' %}  is defined in url path to dynamically create url -->
              <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
-             <a class="nav-link active" aria-current="page" href="{% url 'patient_grid' %}">Active Patients</a>
-             <a class="nav-link active" aria-current="page" href="{% url 'patient_history' %}">Patient History</a>
+             <a class="nav-link active" aria-current="page" href="{% url 'patient_list' %}">Practitioners</a>
+             <a class="nav-link active" aria-current="page" href="{% url 'patient_grid' %}">Patients</a>
+             <a class="nav-link active" aria-current="page" href="{% url 'patient_history' %}">History</a>
              <a class="nav-link active" aria-current="page" href="{% url 'profile_grid' %}">Medication Profiles</a>
              {% if user.is_authenticated %}
                

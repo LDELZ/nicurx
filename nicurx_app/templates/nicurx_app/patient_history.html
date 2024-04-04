@@ -15,6 +15,9 @@
         <div class="col-auto">
             <a href="/patient_history_ID/" class="btn btn-primary custom-btn-primary">Sort by ID</a>
         </div>
+        <div class="col-auto">
+            <a href="/patient_history_ID/" class="btn btn-primary custom-btn-primary">Sort by Discharge Date</a>
+        </div>
     </div>
 </div>
 <br>
@@ -24,9 +27,7 @@
         <div class="col text-start">Patient ID</div>
         <div class="col text-start">Date of Birth</div>
         <div class="col text-start">Guardian Name</div>
-        <div class="col text-start">Weight (kg)</div>
-        <div class="col text-start">Height (cm)</div>
-        <div class="col text-start">BSA (m2)</div>
+        <div class="col text-start">Discharged On</div>
       </div>
   </div>
         <div class="container">
@@ -40,9 +41,7 @@
                   <div class="col text-start">{{ i.id_number }}</div>
                   <div class="col text-start">{{ i.date_of_birth }}</div>
                   <div class="col text-start">{{ i.guardian_name }}</div>
-                  <div class="col text-start">{{ i.weight }}</div>
-                  <div class="col text-start">{{ i.height }}</div>
-                  <div class="col text-start">{{ i.calculate_bsa|floatformat:2 }}</div>
+                  <div class="col text-start">{{ i.discharge_date }}</div>
               </div>
         {% empty %} <div class="">There are no current patients</div>
       {% endfor %}
