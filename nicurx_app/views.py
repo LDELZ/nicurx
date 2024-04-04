@@ -47,6 +47,11 @@ def patient_grid_view_ID(request):
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_grid.html', {'active_patients':active_patients})
 
+def patient_grid_view_status(request):
+    active_patients = Patient.objects.filter(is_active=True).select_related('medication_profile')
+    sorted_active_patients = sorted(active_patients, key=lambda p: getattr(p.medication_profile, 'has_issues', False), reverse=True)
+    return render(request, 'nicurx_app/patient_grid.html', {'active_patients': sorted_active_patients})
+
 def patient_grid_view_all(request):
    active_patients = Patient.objects.filter(is_active=False).order_by('last_name')
    print("active patient query set", active_patients)
@@ -137,3 +142,17 @@ class ProfileDetailView(generic.DetailView):
       profile = context['object']
       context['medications'] = profile.medications.all()
       return context
+   
+# View to generate a form to delete a project 
+def deletePatient(request, patient_id):
+
+   # Get the current project and portfolio objects from their IDs in the URL
+   patient = Patient.objects.get(pk=patient_id)
+
+   if request.method == 'POST':
+      patient.delete()
+      return redirect('patient_list')
+   
+   context = {'patient': patient}
+   # Redirect back to the portfolio detail page
+   return render(request, 'nicurx_app/patient_delete.html', context)

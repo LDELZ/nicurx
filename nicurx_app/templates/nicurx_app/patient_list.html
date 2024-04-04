@@ -20,10 +20,13 @@
                         <div class="col text-start">{{ patient.last_name }}, {{ patient.first_name }}</div>
                         <div class="col text-start">ID: {{ patient.id_number }}</div>
                         <div class="col text-start">DOB: {{ patient.date_of_birth }}</div>
-                        <div class="col"><a href="{{ patient.get_absolute_url }}" class="btn btn-primary custom-btn-secondary">View</a></div>
-                        <div class="col"><a href="{% url 'update-patient' patient_id=patient.id patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Edit</a></div>
-                        <div class="col"><a href="{% url 'discharge-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Discharge</a></div>
-                        <div class="col">
+                        <div class="d-flex col-md-auto">
+                            <a href="{{ patient.get_absolute_url }}" class="btn btn-primary custom-btn-secondary me-1">View</a>
+                            <a href="{% url 'update-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary me-1">Edit</a>
+                            <a href="{% url 'delete-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary me-1">Delete</a>
+                            <a href="{% url 'discharge-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Discharge</a>
+                        </div>
+                        <div class="col-md-auto">
                             {% if patient.medication_profile.has_issues %}
                                 <img src="{% static 'images/warning.png' %}" alt="Issues Detected" width="40" height="40">
                             {% else %}
