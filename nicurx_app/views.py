@@ -70,8 +70,10 @@ def patient_grid_view_all_date(request):
 class PatientDetailView(generic.DetailView):
    model = Patient
    def get_context_data(self, **kwargs):
-      context = super().get_context_data(**kwargs)
-      return context
+        context = super().get_context_data(**kwargs)
+        patient = context['object']
+        context['medications'] = patient.medication_profile.medications.all() if patient.medication_profile else []
+        return context
    
 # View to generate a form to update a portfolio 
 def updatePatient(request, patient_id):

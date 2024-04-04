@@ -42,9 +42,16 @@
             </ul>
             <h5 class="card-title"><strong>Medication List: </strong></h5>
             <ul style="list-style-type: none">
-                <li><strong>Profile: </strong>{{ patient.medication_profile.title}}</li>
-                <li><strong>Number of Medications: </strong>{{ patient.height }}</li>
-                <li><strong>Active Issues: </strong>0</li>
+                {% if medications %}
+                <ul><strong>
+                    {% for medication in medications %}
+                        <li>{{ medication.medication_name }} - {{ medication.calculation_unit }}</li>
+                    {% endfor %}
+                </strong></ul>
+            {% else %}
+                <p>No medications found for this profile.</p>
+            {% endif %}
+            
             </ul>
         </p>
     </div>
