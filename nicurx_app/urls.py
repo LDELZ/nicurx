@@ -32,5 +32,7 @@ path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail
 
 # user accounts
 path('accounts/', include('django.contrib.auth.urls')),
-path('accounts/register/', views.registerPage, name='register_page')
+path('accounts/register/', views.registerPage, name='register_page'),
+
+path('patient/<int:pk>/pdf/', views.PatientPDFView.as_view(), name='patient-pdf'),
 ]

@@ -178,3 +178,39 @@ def deletePatient(request, patient_id):
    context = {'patient': patient}
    # Redirect back to the portfolio detail page
    return render(request, 'nicurx_app/patient_delete.html', context)
+
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+
+class PatientPDFView(generic.DetailView):
+    model = Patient
+
+    def get(self, request, *args, **kwargs):
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="patient_info.pdf"'
+
+        p = canvas.Canvas(response, pagesize=letter)
+
+        patient = self.get_object()
+        medications = patient.medication_profile.medications.all() if patient.medication_profile else []
+
+        y = 750
+        p.drawString(100, y, f"Patient Name: {patient.first_name} {patient.last_name}")
+
+        y -= 50
+        p.drawString(100, y, f"ID Number: {patient.id_number}")
+
+        y -= 50
+        p.drawString(100, y, f"Date of Birth: {patient.date_of_birth}")
+
+        y -= 50
+        p.drawString(100, y, "Medications:")
+        for medication in medications:
+            y -= 20
+            p.drawString(120, y, f"{medication.medication_name}")
+
+        p.showPage()
+        p.save()
+
+        return response
