@@ -35,11 +35,11 @@
             <a class="nav-link active" aria-current="page" href="{% url 'profile_grid' %}">Medication Profiles</a>
           </div>
             <div class="ms-auto">
-              <a class="nav-link active" aria-current="page" href="/supervisor_login/" style="color: white">Login</a>
+              <a class="nav-link active" aria-current="page" href="{% url 'login' %}" style="color: white">Login</a>
             {% if user.is_authenticated %}
                 
             {% else %}
-                <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
             {% endif %}
         </div>
         

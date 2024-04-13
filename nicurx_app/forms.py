@@ -12,3 +12,8 @@ class PatientForm(ModelForm):
                 widgets = {
                     'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
                 }
+
+class CreateUserForm(UserCreationForm):
+        class Meta:
+                model = User
+                fields = ['username', 'email', 'password1', 'password2']

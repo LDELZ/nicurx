@@ -3,7 +3,27 @@ from django.http import HttpResponse
 from .models import *
 from django.utils import timezone
 from django.views import generic
-from .forms import PatientForm
+from .forms import PatientForm, CreateUserForm
+from django.contrib import messages
+from django.contrib.auth.models import Group
+
+def registerPage(request):
+   form = CreateUserForm()
+   if request.method == 'POST':
+      form = CreateUserForm(request.POST)
+      if form.is_valid():
+         user = form.save()
+         username = form.cleaned_data.get('username')
+         group = Group.objects.get(name='supervisor')
+         user.groups.add(group)
+         supervisor = Supervisor.objects.create(user=user,)
+         supervisor.save()
+
+         messages.success(request, 'Account was created for ' + username)
+         return redirect('login')
+   
+   context = {'form':form}
+   return render(request, 'registration/register.html', context)
 
 # Create your views here.
 def index(request):

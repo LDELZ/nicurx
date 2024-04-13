@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from django.contrib import admin
 from . import views
 
@@ -29,4 +29,8 @@ path('patient/delete_patient/<int:patient_id>', views.deletePatient, name='delet
 path('profile_grid/', views.profile_grid_view, name='profile_grid'),
 path('profile_grid_ID/', views.profile_grid_view_ID, name='profile_grid_ID'),
 path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail'),
+
+# user accounts
+path('accounts/', include('django.contrib.auth.urls')),
+path('accounts/register/', views.registerPage, name='register_page')
 ]

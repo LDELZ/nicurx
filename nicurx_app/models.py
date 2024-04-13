@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.contrib.auth.models import User
 import math
 
 # Create your models here.  
@@ -25,7 +26,7 @@ class MedicationProfile(models.Model):
 
 #-----------------------------------------------------------------------------------------------------------------------
 class Patient(models.Model):
-
+    
     # Patient attributes
     is_active = models.BooleanField(default = True)
     first_name = models.CharField(max_length=200)
@@ -71,3 +72,12 @@ class Medication(models.Model):
     
     def get_absolute_url(self):
         return reverse('medication-detail', args=[str(self.id)])
+    
+class Supervisor(models.Model):
+    user = models.OneToOneField(User, null=True, on_delete=models.CASCADE)
+    supervisor_name = models.CharField(max_length=200)
+    def __str__(self):
+        return self.supervisor_name
+    
+    def get_absolute_url(self):
+        return reverse('supervisor-detail', args=[str(self.id)])
