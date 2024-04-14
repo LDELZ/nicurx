@@ -6,6 +6,16 @@ from django.views import generic
 from .forms import PatientForm, CreateUserForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
+import os
+from reportlab.lib.colors import Color, black
+from django.conf import settings
+from django.templatetags.static import static
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.graphics.barcode import qr
+from reportlab.graphics import renderPDF
+from reportlab.graphics.shapes import Drawing
+
 
 def registerPage(request):
    form = CreateUserForm()
@@ -179,38 +189,109 @@ def deletePatient(request, patient_id):
    # Redirect back to the portfolio detail page
    return render(request, 'nicurx_app/patient_delete.html', context)
 
-from django.http import HttpResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
+
 
 class PatientPDFView(generic.DetailView):
     model = Patient
 
     def get(self, request, *args, **kwargs):
-        response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = 'attachment; filename="patient_info.pdf"'
+         response = HttpResponse(content_type='application/pdf')
+         response['Content-Disposition'] = 'attachment; filename="patient_info.pdf"'
 
-        p = canvas.Canvas(response, pagesize=letter)
+         p = canvas.Canvas(response, pagesize=letter)         
 
-        patient = self.get_object()
-        medications = patient.medication_profile.medications.all() if patient.medication_profile else []
+         # Print the company logo
+         image_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'brand.png')
+         p.drawImage(image_path, 100, 670, width=400, height=80)
+         patient = self.get_object()
+         medications = patient.medication_profile.medications.all() if patient.medication_profile else []
 
-        y = 750
-        p.drawString(100, y, f"Patient Name: {patient.first_name} {patient.last_name}")
+         qr_code = qr.QrCodeWidget('http://127.0.0.1:8000/patient/2' + str(patient.id))
+         bounds = qr_code.getBounds()
+         qr_width = bounds[2] - bounds[0]
+         qr_height = bounds[3] - bounds[1]
 
-        y -= 50
-        p.drawString(100, y, f"ID Number: {patient.id_number}")
+         d = Drawing(200, 200, transform=[200./qr_width, 0, 0, 200./qr_height, 0, 0])
+         d.add(qr_code)
+         page_width, page_height = letter
+         x = page_width - 210
+         y = 10
+         renderPDF.draw(d, p, x, y)
 
-        y -= 50
-        p.drawString(100, y, f"Date of Birth: {patient.date_of_birth}")
 
-        y -= 50
-        p.drawString(100, y, "Medications:")
-        for medication in medications:
+         custom_color = Color(0.106,0.259,0.361)
+         y = 650
+         x = 220
+
+         # Print the header
+         p.setFont("Helvetica-Bold", 16)
+         p.setFillColor(custom_color)
+         p.drawString(x, y, f"Detailed Patient Report")
+
+         x = 50
+         difference = 20
+         # Print the details
+         y -= difference * 2
+         p.setFont("Helvetica-Bold", 14)
+         p.setFillColor(black)
+         p.drawString(x, y, f"Personal Information")
+
+         x = 100
+         y -= difference
+         p.setFont("Helvetica", 12)
+         p.drawString(x, y, f"Patient Name: {patient.first_name} {patient.last_name}")
+
+         y -= difference
+         p.drawString(100, y, f"ID Number: {patient.id_number}")
+
+         y -= difference
+         p.drawString(100, y, f"Date of Birth: {patient.date_of_birth}")
+
+         y -= difference
+         p.drawString(100, y, f"Guardian Name: {patient.guardian_name}")
+         
+         x = 50
+         y -= difference * 2
+         p.setFont("Helvetica-Bold", 14)
+         p.drawString(x, y, f"Body Metrics")
+
+         y -= difference
+         x = 100
+         p.setFont("Helvetica", 12)
+         p.drawString(x, y, f"Weight (kg): {patient.weight}")
+
+         y -= difference
+         p.drawString(x, y, f"Height (cm): {patient.height}")
+
+         y -= difference
+         p.drawString(x, y, f"BSA (m^2): {patient.calculate_bsa():.2f}")
+
+         x = 50
+         y -= difference * 2
+         p.setFont("Helvetica-Bold", 14)
+         p.drawString(x, y, "Medication Profile:")
+
+         y -= difference
+         x = 100
+         p.setFont("Helvetica", 12)
+         p.drawString(x, y, f"Profile: { patient.medication_profile.title }")
+
+         y -= difference
+         p.drawString(x, y, f"Number of Medications: { patient.medication_profile.number_medications() }")
+
+         y -= difference
+         p.drawString(x, y, f"Active Issues: { patient.medication_profile.number_medications() }")
+
+         x = 50
+         y -= difference * 2
+         p.setFont("Helvetica-Bold", 14)
+         p.drawString(x, y, "Medications:")
+         p.setFont("Helvetica", 12)
+         for medication in medications:
             y -= 20
             p.drawString(120, y, f"{medication.medication_name}")
 
-        p.showPage()
-        p.save()
+         p.showPage()
+         p.save()
 
-        return response
+         return response
