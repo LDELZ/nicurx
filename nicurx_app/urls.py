@@ -35,6 +35,7 @@ path('patient-search/', views.patient_search, name='patient-search'),
 # user accounts
 path('accounts/', include('django.contrib.auth.urls')),
 path('accounts/register/', views.registerPage, name='register_page'),
-
+path ('user/', views.userPage, name='user_page'),
 path('patient/<int:pk>/pdf/', views.PatientPDFView.as_view(), name='patient-pdf'),
+path('logout/', views.logout_view, name='logout_page'),
 ]

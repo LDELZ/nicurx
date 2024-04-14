@@ -1,0 +1,19 @@
+{% extends 'nicurx_app/base_template.html' %}
+{% block content %}
+<h3>UCCS Student Profile</h3>
+Welcome, {{user}} portfolio id: {{user.student.portfolio.id}}
+<p><strong>Portfolio:{{ user.student.portfolio.title }}
+<a class="btn btn-primary" href="{}" role="button">View</a>
+<a class="btn btn-primary" href="{}" role="button">Update</a>
+
+<h3>Student Information</h3>
+
+    <form method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <input class="btn btn-primary" type="submit" name = "Update">
+    </form>
+
+</div>
+{% endblock %}

@@ -3,9 +3,10 @@ from django.http import HttpResponse
 from .models import *
 from django.utils import timezone
 from django.views import generic
-from .forms import PatientForm, CreateUserForm
+from .forms import PatientForm, CreateUserForm, SupervisorForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
+from django.contrib.auth import logout
 import os
 from reportlab.lib.colors import Color, black
 from django.conf import settings
@@ -15,6 +16,8 @@ from reportlab.lib.pagesizes import letter
 from reportlab.graphics.barcode import qr
 from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import Drawing
+from django.contrib.auth.decorators import login_required
+from .decorators import allowed_users
 
 
 def registerPage(request):
@@ -34,6 +37,10 @@ def registerPage(request):
    
    context = {'form':form}
    return render(request, 'registration/register.html', context)
+
+def logout_view(request):
+    logout(request)
+    return render(request, 'nicurx_app/logout.html')
 
 # Create your views here.
 def index(request):
@@ -312,4 +319,15 @@ def patient_search(request):
         messages.error(request, "No patient with that ID number exists.")
         return redirect('guardian-search')
 
-
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['supervisor'])
+def userPage(request):
+   supervisor = request.user.supervisor
+   form = SupervisorForm(instance = supervisor)
+   print('supervisor', supervisor)
+   if request.method == 'POST':
+      form = SupervisorForm(request.POST, request.FILES, instance=supervisor)
+      if form.is_valid():
+         form.save()
+   context = {'form':form}
+   return render(request, 'nicurx_app/user.html', context)

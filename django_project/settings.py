@@ -61,7 +61,7 @@ ROOT_URLCONF = 'django_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,4 +134,5 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = '/images/'
-LOGIN_REDIRECT_URL='/'
+LOGIN_REDIRECT_URL='user_page'
+LOGOUT_REDIRECT_URL='logout_page'
