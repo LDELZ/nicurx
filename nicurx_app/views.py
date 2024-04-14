@@ -40,6 +40,10 @@ def index(request):
     # Render index.html
     return render( request, 'nicurx_app/index.html')
 
+def guardian_view(request):
+    # Render index.html
+    return render( request, 'nicurx_app/guardian_search.html')
+
 def accessibility_view(request):
     return render(request, 'nicurx_app/accessibility.html')
 
@@ -206,7 +210,8 @@ class PatientPDFView(generic.DetailView):
          patient = self.get_object()
          medications = patient.medication_profile.medications.all() if patient.medication_profile else []
 
-         qr_code = qr.QrCodeWidget('http://127.0.0.1:8000/patient/2' + str(patient.id))
+         url = 'http://127.0.0.1:8000/patient/' + str(patient.id)
+         qr_code = qr.QrCodeWidget(url)
          bounds = qr_code.getBounds()
          qr_width = bounds[2] - bounds[0]
          qr_height = bounds[3] - bounds[1]
@@ -217,7 +222,9 @@ class PatientPDFView(generic.DetailView):
          x = page_width - 210
          y = 10
          renderPDF.draw(d, p, x, y)
-
+         p.setFont("Helvetica", 10)
+         p.setFillColor(black)
+         p.drawString(x+28, y+12, f"{url}")
 
          custom_color = Color(0.106,0.259,0.361)
          y = 650
@@ -295,3 +302,14 @@ class PatientPDFView(generic.DetailView):
          p.save()
 
          return response
+
+def patient_search(request):
+    id_number = request.GET.get('id_number')
+    try:
+        patient = Patient.objects.get(id_number=id_number)
+        return redirect(patient.get_absolute_url())
+    except Patient.DoesNotExist:
+        messages.error(request, "No patient with that ID number exists.")
+        return redirect('guardian-search')
+
+

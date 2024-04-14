@@ -11,10 +11,7 @@
 <div class="outerDiv"> 
         <div class="myDiv">
             <span class="textColor">
-                <p>NICURx is a medical-grade calculator used to automatically determine medication doses for neonates. Intended for use by 
-                    neonatal intensive care unit (NICU) practitioners. NICURx makes checking all calculations for NICU patients simpler. With its abilities to create
-                    a medical record for each patient and select which medications patients are on, automatic calculations are readily available
-                    to practitioners.</p>
+                <p>Use the search bar below to search for a patient using their ID number. Their detailed aptient page will appear if that patient exists.</p>
             </span>
         </div>
     </div> 
@@ -23,15 +20,27 @@
 <br><div class="card custom-card">     
     <div class="card-header custom-card-header style=text-align: left;">
         <h5 class="mb-0">
-            <h3><strong>Begin by selecting your role below</strong></h3>
+            <h3><strong>Enter an ID number</strong></h3>
         </h5>
     </div>
     <div class="card-body" style="text-align: center;">
         <p class="card-text">
             <div class="container">
-                <a href="/patient_list/" class="btn btn-primary custom-btn-primary">Practitioners</a>
-                <br><br><a href="{% url 'guardian-search' %}" class="btn btn-primary custom-btn-primary">Guardians</a>
-                <br><br><a href="{% url 'login' %}" class="btn btn-primary custom-btn-primary">Supervisors</a>
+
+    <form action="{% url 'patient-search' %}" method="get">
+        <input type="text" name="id_number" placeholder="Enter Patient ID" required>
+        <button type="submit">Search</button>
+        {% if messages %}
+            {% for message in messages %}
+
+                    <br>{{ message }}
+
+            {% endfor %}
+        {% endif %}
+
+
+    </form>
+    
                   </div>
         </p>
     </div>

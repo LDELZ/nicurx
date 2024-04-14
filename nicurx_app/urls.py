@@ -12,6 +12,7 @@ path('', views.index, name='index'),
 path('admin/', admin.site.urls),
 path('accessibility/', views.accessibility_view, name='accessibility'),
 path('disclaimer/', views.disclaimer_view, name='disclaimer'),
+path('search/', views.guardian_view, name='guardian-search'),
 path('supervisor_login/', views.supervisor_login_view, name='supervisor_login'),
 path('contact_info/', views.contact_info_view, name='supervisor_login'),
 path('patient_list/', views.patient_list_view, name='patient_list'),
@@ -29,6 +30,7 @@ path('patient/delete_patient/<int:patient_id>', views.deletePatient, name='delet
 path('profile_grid/', views.profile_grid_view, name='profile_grid'),
 path('profile_grid_ID/', views.profile_grid_view_ID, name='profile_grid_ID'),
 path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail'),
+path('patient-search/', views.patient_search, name='patient-search'),
 
 # user accounts
 path('accounts/', include('django.contrib.auth.urls')),
