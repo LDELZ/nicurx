@@ -23,27 +23,30 @@
             <h3><strong>Login</strong></h3>
         </h5>
     </div>
+    {% if user.is_authenticated %}
+      <h3><br>Logged in as {{ user.username }}<br></h3>
+      <p><a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
     <div class="card-body" style="text-align: center;">
-        <p class="card-text">
-            <div class="container">
-                  <!-- doesn't work correctly - do not want to do all messages-->
-                  {% for message in messages %}
-                    <p>{{message}}</p>
-                  {% endfor %}
+      <p class="card-text">
+          <div class="container">
+                {% for message in messages %}
+                  <p>{{message}}</p>
+                {% endfor %}
 
-                  {% if form.errors %}
-                    <p>Your username and password didn't match. Please try again.</p>
+                {% if form.errors %}
+                  <p>Your username and password didn't match. Please try again.</p>
+                {% endif %}
+
+                {% if next %}
+                  {% if user.is_authenticated %}
+                    <p>Your account doesn't have access to this page. To proceed,
+                    please login with an account that has access.</p>
+                  {% else %}
+                    <p>Please login to see this page.</p>
                   {% endif %}
-
-                  {% if next %}
-                    {% if user.is_authenticated %}
-                      <p>Your account doesn't have access to this page. To proceed,
-                      please login with an account that has access.</p>
-                    {% else %}
-                      <p>Please login to see this page.</p>
-                    {% endif %}
-                  {% endif %}
-
+                {% endif %}
+      
 <form method="post" action="{% url 'login' %}">
   {% csrf_token %}
   <style>
@@ -75,13 +78,14 @@
   <input type="hidden" name="next" value="{{ next }}">
 </form>
 
-{# Assumes you setup the password_reset view in your URLconf #}
 <p><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
 <p><a href="{% url 'register_page' %}">Register</a></p>                
                   </div>
         </p>
     </div>
+    {% endif %}
 </div>
+
 <br><a href="{% url 'index' %}" class="btn btn-primary custom-btn-primary">Back</a>
 
 {% endblock %}

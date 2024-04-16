@@ -2,6 +2,18 @@
 {% extends 'nicurx_app/base_template.html' %}
 
 {% block content %}
-  <p>Logged out!</p>
-  <a href="{% url 'login'%}">Click here to login again.</a>
+<br><div class="card custom-card">     
+  <div class="card-header custom-card-header style=text-align: left;">
+      <h5 class="mb-0">
+          <h3><strong>Logged out</strong></h3>
+      </h5>
+  </div>
+  <div class="card-body" style="text-align: center;">
+      <p class="card-text">
+          <div class="container">
+            <a href="{% url 'login'%}">Click here to login again.</a>
+                </div>
+      </p>
+  </div>
+</div>
 {% endblock %}

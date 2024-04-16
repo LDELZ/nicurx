@@ -24,7 +24,6 @@ class MedicationProfile(models.Model):
     def get_absolute_url(self):
         return reverse('medication-profile-detail', args=[str(self.id)])
 
-#-----------------------------------------------------------------------------------------------------------------------
 class Patient(models.Model):
     
     # Patient attributes
@@ -51,20 +50,17 @@ class Patient(models.Model):
 
     def get_absolute_url(self):
         return reverse('patient-detail', args=[str(self.id)])
-#-----------------------------------------------------------------------------------------------------------------------
 
 class Medication(models.Model):
 
     CalculationUnit = (
     ('KG', 'Kilograms'),
     ('BSA', 'Body Mass Index'),
-    ('Rate', 'Rate'),
-    ('None', 'None'),
     )
     medication_name = models.CharField(max_length=200)
     calculation_unit = models.CharField(max_length=200, choices=CalculationUnit, blank = False, default=None)
     medication_profile = models.ForeignKey(MedicationProfile, on_delete=models.CASCADE, related_name='medications', default=None, null=True)
-    resource_link = models.TextField(blank = True)
+    resource_link = models.CharField(max_length=300)
     evidence_description = models.TextField(blank = True)
     high_risk = models.BooleanField(default = False)
     def __str__(self):

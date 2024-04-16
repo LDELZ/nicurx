@@ -1,12 +1,22 @@
+<!-- inherit from base.html -->
 {% extends 'nicurx_app/base_template.html' %}
 {% block content %}
-<h3>UCCS Student Profile</h3>
-Welcome, {{user}} portfolio id: {{user.student.portfolio.id}}
-<p><strong>Portfolio:{{ user.student.portfolio.title }}
-<a class="btn btn-primary" href="{}" role="button">View</a>
-<a class="btn btn-primary" href="{}" role="button">Update</a>
 
-<h3>Student Information</h3>
+<br><div class="card custom-card">     
+  <div class="card-header custom-card-header style=text-align: left;">
+      <h5 class="mb-0">
+          <h3><strong>Welcome, supervisor {{user}}</strong></h3>
+      </h5>
+  </div>
+  <div class="card-body" style="text-align: center;">
+      <p class="card-text">
+          <div class="container">
+            <a class="btn btn-primary" href="{% url 'logout'%}" role="button">Logout</a>
+                </div>
+      </p>
+  </div>
+</div>
+
 
     <form method="POST" action="" enctype="multipart/form-data">
         {% csrf_token %}

@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .models import *
 from django.utils import timezone
 from django.views import generic
-from .forms import PatientForm, CreateUserForm, SupervisorForm
+from .forms import PatientForm, CreateUserForm, SupervisorForm, MedicationForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import logout
@@ -40,15 +40,15 @@ def registerPage(request):
 
 def logout_view(request):
     logout(request)
-    return render(request, 'nicurx_app/logout.html')
+    return render(request, 'registration/logout.html')
 
-# Create your views here.
+def password_reset_view(request):
+    return render(request, 'registration/password_reset_form.html')
+
 def index(request):
-    # Render index.html
     return render( request, 'nicurx_app/index.html')
 
 def guardian_view(request):
-    # Render index.html
     return render( request, 'nicurx_app/guardian_search.html')
 
 def accessibility_view(request):
@@ -67,6 +67,11 @@ def patient_list_view(request):
    active_patients = Patient.objects.filter(is_active=True).order_by('last_name')
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_list.html', {'active_patients':active_patients})
+
+def medication_list_view(request):
+   active_medications = Medication.objects.order_by('medication_name')
+   print("active patient query set", active_medications)
+   return render( request, 'nicurx_app/medication_list.html', {'active_medications':active_medications})
 
 def profile_grid_view(request):
    profiles = MedicationProfile.objects.filter(is_active=True).order_by('title')
@@ -116,6 +121,9 @@ class PatientDetailView(generic.DetailView):
         context['medications'] = patient.medication_profile.medications.all() if patient.medication_profile else []
         return context
    
+class MedicationDetailView(generic.DetailView):
+   model = Medication
+   
 # View to generate a form to update a portfolio 
 def updatePatient(request, patient_id):
    patient = Patient.objects.get(pk=patient_id)
@@ -156,6 +164,31 @@ def createPatient(request):
    # Redirect back to the update_form URL
    context = {'form': form}
    return render(request, 'nicurx_app/update_form.html', context)
+
+def createMedication(request):
+   
+   # Display the default form the first time it is being requested (used for creation)
+   form = MedicationForm()
+
+   # Test if the form submission is to POST
+   if request.method == 'POST':
+
+      # Create a new dictionary with form data and portfolio_id
+      form = MedicationForm(request.POST)
+
+      # Test if the form contents are valid
+      if form.is_valid():
+
+         # Save the form without committing to the database
+         medication = form.save()
+
+
+         # Redirect back to the portfolio detail page
+         return redirect('medication-detail', medication.pk)
+      
+   # Redirect back to the update_form URL
+   context = {'form': form}
+   return render(request, 'nicurx_app/medication_form.html', context)
 
 # View to generate a form to delete a patient
 def dischargePatient(request, patient_id):

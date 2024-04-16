@@ -13,6 +13,11 @@ class PatientForm(ModelForm):
                     'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
                 }
 
+class MedicationForm(ModelForm):
+        class Meta:
+                model = Medication
+                fields ='__all__'
+
 class CreateUserForm(UserCreationForm):
         class Meta:
                 model = User
