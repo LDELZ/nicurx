@@ -13,26 +13,18 @@
 
 <br>
     <ul class="list-group">
-        {% for patient in active_patients %} 
+        {% for medication in active_medications %} 
         <div class="card custom-card" style="margin-bottom: 1rem;">
             <div class="card-header custom-card-header style=text-align: left;">
                 <h5 class="mb-0">
                     <div class="container">
                     <div class="row">
-                        <div class="col text-start">{{ patient.last_name }}, {{ patient.first_name }}</div>
-                        <div class="col text-start">ID: {{ patient.id_number }}</div>
-                        <div class="col text-start">DOB: {{ patient.date_of_birth }}</div>
+                        <div class="col text-start">{{ medication.medication_name }}</div>
                         <div class="d-flex col-md-auto">
-                            <a href="{{ patient.get_absolute_url }}" class="btn btn-primary custom-btn-secondary me-1">View</a>
-                            <a href="{% url 'update-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary me-1">Edit</a>
-                            <a href="{% url 'delete-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary me-1">Delete</a>
-                            <a href="{% url 'discharge-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Discharge</a>
-                        </div>
-                        <div class="col-md-auto">
-                            {% if patient.medication_profile.has_issues %}
-                                <img src="{% static 'images/warning.png' %}" alt="Issues Detected" width="40" height="40">
-                            {% else %}
-                                <img src="{% static 'images/ok.png' %}" alt="No Issues" width="40" height="40">
+                            <a href="{{ medication.get_absolute_url }}" class="btn btn-primary custom-btn-secondary me-1">View</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'update-medication' medication_id=medication.id %}" class="btn btn-primary custom-btn-secondary me-1">Edit</a>
+                                <a href="{% url 'delete-medication' medication_id=medication.id %}" class="btn btn-primary custom-btn-secondary me-1">Delete</a>
                             {% endif %}
                         </div>
                 </h5>
@@ -41,29 +33,16 @@
             <div class="card-body" style="text-align: left; color: black;">
                 <div class="container">
                     <div class="row" style="background-color: #333; color: white">
-                      <div class="col text-start">Metrics</div>
-                      <div class="col text-start">Medication Details</div>
-                      <div class="col text-start">Status</div>
+                      <div class="col text-start">Details</div>
                     </div>
                 </div>
                             <div class="row" style="background-color: #f2f2f2;">
-                                <div class="col text-start"><strong>Weight (kg): </strong>{{ patient.weight }}</div>
-                                <div class="col text-start"><strong>Med Profile: </strong>{{ patient.medication_profile.title }}</div>
-                                {% if patient.medication_profile.has_issues %}
-                                    <div class="col text-start"><strong>Warning </strong></div>
-                                {% else %}
-                                    <div class="col text-start"><strong>No issues detected </strong></div>
-                                {% endif %}
+                                <div class="col text-start"><strong>Dosing unit: </strong>{{ medication.calculation_unit }}</div>
+                                <div class="col text-start"><strong>High risk?: </strong>{{ medication.high_risk }}</div>
+                                <div class="col text-start"><strong>Dose limit: </strong></div>
                             </div>
                             <div class="row" style="background-color: #fffffff;">
-                                <div class="col text-start"><strong>Height (cm): </strong>{{ patient.height}}</div>
-                                <div class="col text-start"><strong>Number Meds: </strong>{{ patient.medication_profile.number_medications }}</div>
-                                <div class="col text-start"></div>
-                            </div>
-                            <div class="row" style="background-color: #f2f2f2;">
-                                <div class="col text-start"><strong>BSA (m^2): </strong>{{ patient.calculate_bsa|floatformat:2 }}</div>
-                                <div class="col text-start"><strong>High Risk? </strong>{{ patient.medication_profile.has_high_risk_med }}</div>
-                                <div class="col text-start"></div>
+                                <div class="col text-start"><strong>Reference: </strong> <a href="{{ medication.resource_link }}">{{ medication.resource_link }}</a></div>
                             </div>
             </div>
         </div>
