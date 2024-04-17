@@ -38,7 +38,7 @@
                             <div class="row" style="background-color: #f2f2f2;">
                                 <div class="col text-start"><strong>Dosing unit: </strong>{{ medication.calculation_unit }}</div>
                                 <div class="col text-start"><strong>High risk?: </strong>{{ medication.high_risk }}</div>
-                                <div class="col text-start"><strong>Dose limit: </strong></div>
+                                <div class="col text-start"><strong>Dose limit (MG per {{medication.calculation_unit}}): </strong>{{ medication.dose_limit}}</div>
                             </div>
                             <div class="row" style="background-color: #fffffff;">
                                 <div class="col text-start"><strong>Reference: </strong> <a href="{{ medication.resource_link }}">{{ medication.resource_link }}</a></div>

@@ -23,7 +23,6 @@
       <div class="row" style="background-color: #1b425c; color: white">
         <div class="col text-start">Profile Name</div>
         <div class="col text-start">Profile ID</div>
-        <div class="col text-start">Number of Medications</div>
       </div>
   </div>
   <div class="container">
@@ -35,7 +34,6 @@
     {% endif %}
             <div class="col text-start"><a href="{% url 'profile-detail' i.id %}">{{ i.title }}</a></div>
             <div class="col text-start">{{ i.id_number }}</div>
-            <div class="col text-start">{{ i.number_medications }}</div>
         </div>
       {% empty %}<div class="">There are no current profiles</div>
 {% endfor %}

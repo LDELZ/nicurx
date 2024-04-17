@@ -18,6 +18,7 @@ from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import Drawing
 from django.contrib.auth.decorators import login_required
 from .decorators import allowed_users
+from django.db.models import Count
 
 # User authentication views
 #--------------------------------------------------------------------------------------------
@@ -61,7 +62,8 @@ def userPage(request):
 #--------------------------------------------------------------------------------------------
 
 
-
+# General navigation:
+#--------------------------------------------------------------------------------------------
 def index(request):
     return render( request, 'nicurx_app/index.html')
 
@@ -79,26 +81,15 @@ def supervisor_login_view(request):
 
 def contact_info_view(request):
     return render(request, 'nicurx_app/contact_info.html')
+#--------------------------------------------------------------------------------------------
 
+
+# Patient views
+#--------------------------------------------------------------------------------------------
 def patient_list_view(request):
    active_patients = Patient.objects.filter(is_active=True).order_by('last_name')
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_list.html', {'active_patients':active_patients})
-
-def medication_list_view(request):
-   active_medications = Medication.objects.order_by('medication_name')
-   print("active patient query set", active_medications)
-   return render( request, 'nicurx_app/medication_list.html', {'active_medications':active_medications})
-
-def profile_grid_view(request):
-   profiles = MedicationProfile.objects.filter(is_active=True).order_by('title')
-   print("profile query set", profiles)
-   return render( request, 'nicurx_app/medication_profiles.html', {'profiles':profiles})
-
-def profile_grid_view_ID(request):
-   profiles = MedicationProfile.objects.filter(is_active=True).order_by('id_number')
-   print("profile query set", profiles)
-   return render( request, 'nicurx_app/medication_profiles.html', {'profiles':profiles})
 
 def patient_grid_view(request):
    active_patients = Patient.objects.filter(is_active=True).order_by('last_name')
@@ -130,15 +121,35 @@ def patient_grid_view_all_date(request):
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_history.html', {'active_patients':active_patients})
 
-
-# Patient views
-#--------------------------------------------------------------------------------------------
 class PatientDetailView(generic.DetailView):
-   model = Patient
-   def get_context_data(self, **kwargs):
+    model = Patient
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         patient = context['object']
-        context['medications'] = patient.medication_profile.medications.all() if patient.medication_profile else []
+
+        if patient.medication_profile:
+            medications_with_doses = MedicationDosage.objects.filter(
+                profile=patient.medication_profile).select_related('medication')
+
+            medications_context = []
+            for md in medications_with_doses:
+                calculated_dose = md.medication.dose_limit * patient.weight
+                medication_info = {
+                    'medication_name': md.medication.medication_name,
+                    'dose': md.dose,
+                    'dose_limit': md.medication.dose_limit,
+                    'calculated_dose': calculated_dose,
+                    'issue': calculated_dose > md.medication.dose_limit
+                }
+                medications_context.append(medication_info)
+
+            context['medications_with_doses'] = medications_context
+            patient.medication_profile.update_issues()
+
+        else:
+            context['medications_with_doses'] = []
+
         return context
 
 def createPatient(request): 
@@ -213,71 +224,92 @@ def deletePatient(request, patient_id):
 
 # Profile views
 #--------------------------------------------------------------------------------------------
-class ProfileDetailView(generic.DetailView):
-   model = MedicationProfile
-   # We need to extend the context of 
-   # Overridden method to get more context to the template, kwargs gives the function an unknown number of key-value pairs
-   def get_context_data(self, **kwargs):
+def profile_grid_view(request):
+   profiles = MedicationProfile.objects.filter(is_active=True).annotate(medication_count=Count('medications')).order_by('title')
+   return render(request, 'nicurx_app/medication_profiles.html', {'profiles': profiles})
 
-      # Get the context data of the superclass (DetailView) for all keywords in the dictionary
-      context = super().get_context_data(**kwargs)
 
-      # Assign the portfolio current portfolio key to a variable portfolio
-      # Use that portfolio key to access the projects associated with it to define a new context 'projects' 
-      profile = context['object']
-      context['medications'] = profile.medications.all()
-      return context
+def profile_grid_view_ID(request):
+   profiles = MedicationProfile.objects.filter(is_active=True).order_by('id_number')
+   print("profile query set", profiles)
+   return render( request, 'nicurx_app/medication_profiles.html', {'profiles':profiles})
+
+def profileDetail(request, profile_id):
+   profile = MedicationProfile.objects.get(pk=profile_id)
+   medications_with_doses = MedicationDosage.objects.filter(profile=profile)
+   profile.refresh_from_db()
+   context = {
+      'profile': profile,
+      'medications_with_doses': medications_with_doses
+   }
+   return render(request, 'nicurx_app/medicationprofile_detail.html', context)
 
 
 def createProfile(request):
-   
-   # Display the default form the first time it is being requested (used for creation)
-   form = ProfileForm()
+    if request.method == 'POST':
+        form = ProfileForm(request.POST)
 
-   # Test if the form submission is to POST
-   if request.method == 'POST':
+        if form.is_valid():
+            profile = form.save(commit=True)
+            profile.save()
 
-      # Create a new dictionary with form data and portfolio_id
-      form = ProfileForm(request.POST)
+            # Display checkpoxes for each medication
+            for field_name, value in form.cleaned_data.items():
+                if field_name.startswith('medication_') and value:
+                    medication_id = int(field_name.split('_')[1])
+                    medication = Medication.objects.get(id=medication_id)
+                    profile.medications.add(medication)
+            
+            return redirect('profile-detail', profile_id=profile.pk)
+    else:
+        form = ProfileForm()
 
-      # Test if the form contents are valid
-      if form.is_valid():
-
-         # Save the form without committing to the database
-         profile = form.save()
-
-         # Redirect back to the portfolio detail page
-         return redirect('profile-detail', profile.pk)
-   
-   # Redirect back to the update_form URL
-   context = {'form': form}
-   return render(request, 'nicurx_app/profile_form.html', context)
+    context = {'form': form}
+    return render(request, 'nicurx_app/profile_form.html', context)
 
 
 def updateProfile(request, profile_id):
-   profile = MedicationProfile.objects.get(pk=profile_id)
+    profile = MedicationProfile.objects.get(pk=profile_id)
+    
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            
+            for medication in Medication.objects.all():
+                checkbox_field_name = f'medication_{medication.id}'
+                float_field_name = f'dosage_{medication.id}'
 
-   if request.method == 'POST':
-      form = ProfileForm(request.POST, instance=profile)
-      if form.is_valid():
-         form.save()
+                if form.cleaned_data[checkbox_field_name]:
+                    dosage_value = form.cleaned_data[float_field_name]
+                    MedicationDosage.objects.update_or_create(
+                        profile=profile, 
+                        medication=medication,
+                        defaults={'dose': dosage_value}
+                    )
+                else:
+                    MedicationDosage.objects.filter(profile=profile, medication=medication).delete()
 
-         # Redirect back to the portfolio detail page
-         return redirect('profile-detail', pk=profile_id)
-   else:
-      form = ProfileForm(instance=profile)
-   context = {'form': form, 'profile': profile}
-   return render(request, 'nicurx_app/profile_update.html', context)
+            return redirect('profile-detail', profile_id=profile_id)
+
+    else:
+        form = ProfileForm(instance=profile)
+
+    context = {'form': form, 'profile': profile}
+    return render(request, 'nicurx_app/profile_update.html', context)
 
 
 def deleteProfile(request, profile_id):
    profile = MedicationProfile.objects.get(pk=profile_id)
-
+   medications_with_doses = MedicationDosage.objects.filter(profile=profile)
    if request.method == 'POST':
       profile.delete()
       return redirect('profile_grid')
    
-   context = {'profile': profile}
+   context = {
+      'profile': profile,
+      'medications_with_doses': medications_with_doses
+   }
    # Redirect back to the portfolio detail page
    return render(request, 'nicurx_app/profile_delete.html', context)
 #--------------------------------------------------------------------------------------------
@@ -285,6 +317,11 @@ def deleteProfile(request, profile_id):
 
 # Medication views
 #--------------------------------------------------------------------------------------------
+def medication_list_view(request):
+   active_medications = Medication.objects.order_by('medication_name')
+   print("active patient query set", active_medications)
+   return render( request, 'nicurx_app/medication_list.html', {'active_medications':active_medications})
+
 class MedicationDetailView(generic.DetailView):
    model = Medication
 

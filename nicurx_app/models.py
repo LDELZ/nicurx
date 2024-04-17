@@ -9,13 +9,21 @@ class MedicationProfile(models.Model):
     about = models.TextField(blank = True)
     id_number = models.IntegerField(null=True)
     is_active = models.BooleanField(default = True)
-    has_issues = models.BooleanField(default = False)
+    issues = models.IntegerField(default = False)
+    
     def number_medications(self):
         return self.medications.count()
     
     def has_high_risk_med(self):
         return self.medications.filter(high_risk=True).exists()
-    
+
+    def update_issues(self):
+        self.issues = 0
+        for dosage in self.dosages.all():
+            if dosage.dose > dosage.medication.dose_limit:
+                self.issues += 1
+        self.save()
+
     #Define default String to return the name for representing the Model object."
     def __str__(self):
         return self.title
@@ -78,3 +86,8 @@ class Supervisor(models.Model):
     
     def get_absolute_url(self):
         return reverse('supervisor-detail', args=[str(self.id)])
+    
+class MedicationDosage(models.Model):
+    profile = models.ForeignKey(MedicationProfile, on_delete=models.CASCADE, related_name='dosages')
+    medication = models.ForeignKey(Medication, on_delete=models.CASCADE)
+    dose = models.FloatField(help_text="Dose", default=1.0)

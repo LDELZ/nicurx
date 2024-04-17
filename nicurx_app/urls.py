@@ -54,7 +54,7 @@ path('medication/delete_medication/<int:medication_id>', views.deleteMedication,
 path('profile_grid/', views.profile_grid_view, name='profile_grid'),
 path('profile_grid_ID/', views.profile_grid_view_ID, name='profile_grid_ID'),
 path('profile/create_profile/', views.createProfile, name='create-profile'),
-path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail'),
+path('profile/<int:profile_id>', views.profileDetail, name='profile-detail'),
 path('profile/update/<int:profile_id>/', views.updateProfile, name='update-profile'),
 path('profile/delete_profile/<int:profile_id>', views.deleteProfile, name='delete-profile'),
 

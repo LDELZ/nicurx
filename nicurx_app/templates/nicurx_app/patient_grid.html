@@ -29,7 +29,6 @@
         <div class="col text-start">Weight (kg)</div>
         <div class="col text-start">Height (cm)</div>
         <div class="col text-start">BSA (m2)</div>
-        <div class="col text-start"># Meds</div>
         <div class="col text-start">High Risk?</div>
         <div class="col text-start">Status</div>
       </div>
@@ -47,7 +46,6 @@
                   <div class="col text-start">{{ i.weight }}</div>
                   <div class="col text-start">{{ i.height }}</div>
                   <div class="col text-start">{{ i.calculate_bsa|floatformat:2 }}</div>
-                  <div class="col text-start">{{ i.medication_profile.number_medications }}</div>
                   <div class="col text-start">{{ i.medication_profile.has_high_risk_med }}</div>
                   <div class="col text-start">
                     {% if i.medication_profile.has_issues %}
