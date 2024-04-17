@@ -6,8 +6,9 @@
 {% block content %}
 <div style="text-align: center;">
     <br><h1><strong>Medication Profiles</strong></h1>
+    <br><a href="{% url 'create-profile' %}" class="btn btn-primary custom-btn-primary">New Medication Profile</a>
 </div>
-<div class="container">
+<br><div class="container">
     <div class="row justify-content-between">
         <div class="col-auto">
             <a href="/profile_grid/" class="btn btn-primary custom-btn-primary">Sort by Name</a>

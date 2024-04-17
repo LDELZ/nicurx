@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .models import *
 from django.utils import timezone
 from django.views import generic
-from .forms import PatientForm, CreateUserForm, SupervisorForm, MedicationForm
+from .forms import PatientForm, CreateUserForm, SupervisorForm, MedicationForm, ProfileForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.contrib.auth import logout
@@ -19,7 +19,8 @@ from reportlab.graphics.shapes import Drawing
 from django.contrib.auth.decorators import login_required
 from .decorators import allowed_users
 
-
+# User authentication views
+#--------------------------------------------------------------------------------------------
 def registerPage(request):
    form = CreateUserForm()
    if request.method == 'POST':
@@ -44,6 +45,22 @@ def logout_view(request):
 
 def password_reset_view(request):
     return render(request, 'registration/password_reset_form.html')
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['supervisor'])
+def userPage(request):
+   supervisor = request.user.supervisor
+   form = SupervisorForm(instance = supervisor)
+   print('supervisor', supervisor)
+   if request.method == 'POST':
+      form = SupervisorForm(request.POST, request.FILES, instance=supervisor)
+      if form.is_valid():
+         form.save()
+   context = {'form':form}
+   return render(request, 'nicurx_app/user.html', context)
+#--------------------------------------------------------------------------------------------
+
+
 
 def index(request):
     return render( request, 'nicurx_app/index.html')
@@ -113,6 +130,9 @@ def patient_grid_view_all_date(request):
    print("active patient query set", active_patients)
    return render( request, 'nicurx_app/patient_history.html', {'active_patients':active_patients})
 
+
+# Patient views
+#--------------------------------------------------------------------------------------------
 class PatientDetailView(generic.DetailView):
    model = Patient
    def get_context_data(self, **kwargs):
@@ -120,28 +140,8 @@ class PatientDetailView(generic.DetailView):
         patient = context['object']
         context['medications'] = patient.medication_profile.medications.all() if patient.medication_profile else []
         return context
-   
-class MedicationDetailView(generic.DetailView):
-   model = Medication
-   
-# View to generate a form to update a portfolio 
-def updatePatient(request, patient_id):
-   patient = Patient.objects.get(pk=patient_id)
 
-   if request.method == 'POST':
-      form = PatientForm(request.POST, instance=patient)
-      if form.is_valid():
-         form.save()
-
-         # Redirect back to the portfolio detail page
-         return redirect('patient-detail', pk=patient_id)
-   else:
-      form = PatientForm(instance=patient)
-   context = {'form': form, 'patient': patient}
-   return render(request, 'nicurx_app/update_form.html', context)
-
-def createPatient(request):
-   
+def createPatient(request): 
    # Display the default form the first time it is being requested (used for creation)
    form = PatientForm()
 
@@ -165,9 +165,24 @@ def createPatient(request):
    context = {'form': form}
    return render(request, 'nicurx_app/update_form.html', context)
 
+# View to generate a form to update a portfolio 
+def updatePatient(request, patient_id):
+   patient = Patient.objects.get(pk=patient_id)
+
+   if request.method == 'POST':
+      form = PatientForm(request.POST, instance=patient)
+      if form.is_valid():
+         form.save()
+
+         # Redirect back to the portfolio detail page
+         return redirect('patient-detail', pk=patient_id)
+   else:
+      form = PatientForm(instance=patient)
+   context = {'form': form, 'patient': patient}
+   return render(request, 'nicurx_app/update_form.html', context)
+
 # View to generate a form to delete a patient
 def dischargePatient(request, patient_id):
-
    patient = Patient.objects.get(pk=patient_id)
    if request.method == 'POST':
       patient.is_active = False
@@ -179,6 +194,25 @@ def dischargePatient(request, patient_id):
    # Redirect back to the portfolio detail page
    return render(request, 'nicurx_app/patient_discharge.html', context)
 
+
+# View to generate a form to delete a project 
+def deletePatient(request, patient_id):
+
+   # Get the current project and portfolio objects from their IDs in the URL
+   patient = Patient.objects.get(pk=patient_id)
+
+   if request.method == 'POST':
+      patient.delete()
+      return redirect('patient_list')
+   
+   context = {'patient': patient}
+   # Redirect back to the portfolio detail page
+   return render(request, 'nicurx_app/patient_delete.html', context)
+#--------------------------------------------------------------------------------------------
+
+
+# Profile views
+#--------------------------------------------------------------------------------------------
 class ProfileDetailView(generic.DetailView):
    model = MedicationProfile
    # We need to extend the context of 
@@ -193,22 +227,139 @@ class ProfileDetailView(generic.DetailView):
       profile = context['object']
       context['medications'] = profile.medications.all()
       return context
-   
-# View to generate a form to delete a project 
-def deletePatient(request, patient_id):
 
-   # Get the current project and portfolio objects from their IDs in the URL
-   patient = Patient.objects.get(pk=patient_id)
+
+def createProfile(request):
+   
+   # Display the default form the first time it is being requested (used for creation)
+   form = ProfileForm()
+
+   # Test if the form submission is to POST
+   if request.method == 'POST':
+
+      # Create a new dictionary with form data and portfolio_id
+      form = ProfileForm(request.POST)
+
+      # Test if the form contents are valid
+      if form.is_valid():
+
+         # Save the form without committing to the database
+         profile = form.save()
+
+         # Redirect back to the portfolio detail page
+         return redirect('profile-detail', profile.pk)
+   
+   # Redirect back to the update_form URL
+   context = {'form': form}
+   return render(request, 'nicurx_app/profile_form.html', context)
+
+
+def updateProfile(request, profile_id):
+   profile = MedicationProfile.objects.get(pk=profile_id)
 
    if request.method == 'POST':
-      patient.delete()
-      return redirect('patient_list')
+      form = ProfileForm(request.POST, instance=profile)
+      if form.is_valid():
+         form.save()
+
+         # Redirect back to the portfolio detail page
+         return redirect('profile-detail', pk=profile_id)
+   else:
+      form = ProfileForm(instance=profile)
+   context = {'form': form, 'profile': profile}
+   return render(request, 'nicurx_app/profile_update.html', context)
+
+
+def deleteProfile(request, profile_id):
+   profile = MedicationProfile.objects.get(pk=profile_id)
+
+   if request.method == 'POST':
+      profile.delete()
+      return redirect('profile_grid')
    
-   context = {'patient': patient}
+   context = {'profile': profile}
    # Redirect back to the portfolio detail page
-   return render(request, 'nicurx_app/patient_delete.html', context)
+   return render(request, 'nicurx_app/profile_delete.html', context)
+#--------------------------------------------------------------------------------------------
 
 
+# Medication views
+#--------------------------------------------------------------------------------------------
+class MedicationDetailView(generic.DetailView):
+   model = Medication
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['supervisor'])
+def createMedication(request):
+   
+   # Display the default form the first time it is being requested (used for creation)
+   form = MedicationForm()
+
+   # Test if the form submission is to POST
+   if request.method == 'POST':
+
+      # Create a new dictionary with form data and portfolio_id
+      form = MedicationForm(request.POST)
+
+      # Test if the form contents are valid
+      if form.is_valid():
+
+         # Save the form without committing to the database
+         medication = form.save()
+
+
+         # Redirect back to the portfolio detail page
+         return redirect('medication-detail', medication.pk)
+      
+   # Redirect back to the update_form URL
+   context = {'form': form}
+   return render(request, 'nicurx_app/medication_form.html', context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['supervisor'])
+def updateMedication(request, medication_id):
+   medication = Medication.objects.get(pk=medication_id)
+
+   if request.method == 'POST':
+      form = MedicationForm(request.POST, instance=medication)
+      if form.is_valid():
+         form.save()
+
+         # Redirect back to the portfolio detail page
+         return redirect('medication-detail', pk=medication_id)
+   else:
+      form = MedicationForm(instance=medication)
+   context = {'form': form, 'medication': medication}
+   return render(request, 'nicurx_app/medication_update.html', context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['supervisor'])
+def deleteMedication(request, medication_id):
+
+   # Get the current project and portfolio objects from their IDs in the URL
+   medication = Medication.objects.get(pk=medication_id)
+
+   if request.method == 'POST':
+      medication.delete()
+      return redirect('medication_list')
+   
+   context = {'medication': medication}
+   # Redirect back to the portfolio detail page
+   return render(request, 'nicurx_app/medication_delete.html', context)
+#--------------------------------------------------------------------------------------------
+
+
+# Exploration views
+#--------------------------------------------------------------------------------------------
+def patient_search(request):
+    id_number = request.GET.get('id_number')
+    try:
+        patient = Patient.objects.get(id_number=id_number)
+        return redirect(patient.get_absolute_url())
+    except Patient.DoesNotExist:
+        messages.error(request, "No patient with that ID number exists.")
+        return redirect('guardian-search')
+    
 class PatientPDFView(generic.DetailView):
     model = Patient
 
@@ -316,84 +467,4 @@ class PatientPDFView(generic.DetailView):
          p.save()
 
          return response
-
-def patient_search(request):
-    id_number = request.GET.get('id_number')
-    try:
-        patient = Patient.objects.get(id_number=id_number)
-        return redirect(patient.get_absolute_url())
-    except Patient.DoesNotExist:
-        messages.error(request, "No patient with that ID number exists.")
-        return redirect('guardian-search')
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['supervisor'])
-def userPage(request):
-   supervisor = request.user.supervisor
-   form = SupervisorForm(instance = supervisor)
-   print('supervisor', supervisor)
-   if request.method == 'POST':
-      form = SupervisorForm(request.POST, request.FILES, instance=supervisor)
-      if form.is_valid():
-         form.save()
-   context = {'form':form}
-   return render(request, 'nicurx_app/user.html', context)
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['supervisor'])
-def createMedication(request):
-   
-   # Display the default form the first time it is being requested (used for creation)
-   form = MedicationForm()
-
-   # Test if the form submission is to POST
-   if request.method == 'POST':
-
-      # Create a new dictionary with form data and portfolio_id
-      form = MedicationForm(request.POST)
-
-      # Test if the form contents are valid
-      if form.is_valid():
-
-         # Save the form without committing to the database
-         medication = form.save()
-
-
-         # Redirect back to the portfolio detail page
-         return redirect('medication-detail', medication.pk)
-      
-   # Redirect back to the update_form URL
-   context = {'form': form}
-   return render(request, 'nicurx_app/medication_form.html', context)
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['supervisor'])
-def updateMedication(request, medication_id):
-   medication = Medication.objects.get(pk=medication_id)
-
-   if request.method == 'POST':
-      form = MedicationForm(request.POST, instance=medication)
-      if form.is_valid():
-         form.save()
-
-         # Redirect back to the portfolio detail page
-         return redirect('medication-detail', pk=medication_id)
-   else:
-      form = MedicationForm(instance=medication)
-   context = {'form': form, 'medication': medication}
-   return render(request, 'nicurx_app/medication_update.html', context)
-
-@login_required(login_url='login')
-@allowed_users(allowed_roles=['supervisor'])
-def deleteMedication(request, medication_id):
-
-   # Get the current project and portfolio objects from their IDs in the URL
-   medication = Medication.objects.get(pk=medication_id)
-
-   if request.method == 'POST':
-      medication.delete()
-      return redirect('medication_list')
-   
-   context = {'medication': medication}
-   # Redirect back to the portfolio detail page
-   return render(request, 'nicurx_app/medication_delete.html', context)
+#--------------------------------------------------------------------------------------------

@@ -18,6 +18,11 @@ class MedicationForm(ModelForm):
                 model = Medication
                 fields ='__all__'
 
+class ProfileForm(ModelForm):
+        class Meta:
+                model = MedicationProfile
+                fields ='__all__'
+
 class CreateUserForm(UserCreationForm):
         class Meta:
                 model = User

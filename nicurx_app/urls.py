@@ -41,9 +41,6 @@ path('patient/create_patient/', views.createPatient, name='create-patient'),
 path('patient/<int:patient_id>/', views.updatePatient, name='update-patient'),
 path('patient/discharge_patient/<int:patient_id>', views.dischargePatient, name='discharge-patient'),
 path('patient/delete_patient/<int:patient_id>', views.deletePatient, name='delete-patient'),
-path('profile_grid/', views.profile_grid_view, name='profile_grid'),
-path('profile_grid_ID/', views.profile_grid_view_ID, name='profile_grid_ID'),
-path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail'),
 path('patient-search/', views.patient_search, name='patient-search'),
 
 # Medication paths
@@ -52,6 +49,14 @@ path('medication_list/', views.medication_list_view, name='medication_list'),
 path('medication/<int:pk>', views.MedicationDetailView.as_view(), name='medication-detail'),
 path('medication/<int:medication_id>/', views.updateMedication, name='update-medication'),
 path('medication/delete_medication/<int:medication_id>', views.deleteMedication, name='delete-medication'),
+
+# Medication profile paths
+path('profile_grid/', views.profile_grid_view, name='profile_grid'),
+path('profile_grid_ID/', views.profile_grid_view_ID, name='profile_grid_ID'),
+path('profile/create_profile/', views.createProfile, name='create-profile'),
+path('profile/<int:pk>', views.ProfileDetailView.as_view(), name='profile-detail'),
+path('profile/update/<int:profile_id>/', views.updateProfile, name='update-profile'),
+path('profile/delete_profile/<int:profile_id>', views.deleteProfile, name='delete-profile'),
 
 # Exploration (PDF generation)
 path('patient/<int:pk>/pdf/', views.PatientPDFView.as_view(), name='patient-pdf'),

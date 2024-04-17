@@ -63,6 +63,7 @@ class Medication(models.Model):
     resource_link = models.URLField(max_length=300, blank=True)
     evidence_description = models.TextField(blank = True)
     high_risk = models.BooleanField(default = False)
+    dose_limit = models.FloatField(help_text="Maximum dose", default=1.0)
     def __str__(self):
         return self.medication_name
     
