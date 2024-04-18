@@ -30,7 +30,7 @@ class MedicationProfile(models.Model):
 
     #Returns the URL to access a particular instance of MyModelName.
     def get_absolute_url(self):
-        return reverse('medication-profile-detail', args=[str(self.id)])
+        return reverse('profile-detail', args=[str(self.id)])
 
 class Patient(models.Model):
     
