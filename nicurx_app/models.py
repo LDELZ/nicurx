@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.utils import timezone
 import math
 
 # Create your models here.  
@@ -40,7 +41,7 @@ class Patient(models.Model):
     last_name = models.CharField(max_length=200)
     id_number = models.IntegerField(null=True)
     guardian_name = models.CharField(max_length=200)
-    date_of_birth = models.DateField()
+    date_of_birth = models.DateField(default=timezone.now)
     weight = models.FloatField(help_text="Weight in kilograms", default=1.0)
     height = models.FloatField(help_text="Height in centimeters", default=1.0)
     medication_profile = models.OneToOneField(MedicationProfile, on_delete=models.CASCADE, default=None, null=True)

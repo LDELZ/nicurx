@@ -3,7 +3,7 @@ from django.urls import reverse
 from nicurx_app.forms import MedicationForm, PatientForm, ProfileForm
 from django.contrib.auth.models import User
 import datetime
-from .models import MedicationProfile
+from nicurx_app.models import MedicationProfile
 
 # Create your tests here.
 class PatientFormTestCase(TestCase):
