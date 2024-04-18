@@ -30,7 +30,7 @@
         <div class="col text-start">Height (cm)</div>
         <div class="col text-start">BSA (m2)</div>
         <div class="col text-start">High Risk?</div>
-        <div class="col text-start">Status</div>
+        <div class="col text-start">Has Issues?</div>
       </div>
   </div>
         <div class="container">
@@ -48,7 +48,7 @@
                   <div class="col text-start">{{ i.calculate_bsa|floatformat:2 }}</div>
                   <div class="col text-start">{{ i.medication_profile.has_high_risk_med }}</div>
                   <div class="col text-start">
-                    {% if medication.dose > medication.calculated_dose  %}
+                    {% if i.medication_profile.issues > 0 %}
                         <img src="{% static 'images/warning.png' %}" alt="Issues Detected" width="20" height="20">
                     {% else %}
                         <img src="{% static 'images/ok.png' %}" alt="No Issues" width="20" height="20">
