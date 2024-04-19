@@ -20,6 +20,9 @@ jobs:
       - name: Install Firefox
         run: sudo apt-get update && sudo apt-get install -y firefox
   
+      - name: Check Firefox version
+        run: firefox --version
+
       - name: Install GeckoDriver
         run: |
             wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
@@ -29,7 +32,7 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+
       - name: Run Django test
         run: |
           python manage.py test
