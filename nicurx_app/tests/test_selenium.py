@@ -5,6 +5,7 @@ from nicurx_app.models import *
 # Firefox webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver import Firefox
+from selenium.webdriver.firefox.service import Service
 
 # Keyboard functions
 from selenium.webdriver.common.by import By
@@ -16,8 +17,8 @@ class SeleniumTests(LiveServerTestCase):
     # Setup the browser interface. In this case Mozilla Firefox is being used
     def setUp(self):
         options = Options()
-        options.add_argument("--headless")
-        self.browser = Firefox(options=options)
+        service = Service(executable_path='/usr/bin/firefox')
+        self.browser = Firefox(options=options, service=service)
 
     # TEST 1: Test to ensure the main page is loaded correctly 
     def testHomePage(self):
