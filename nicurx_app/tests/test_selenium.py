@@ -6,13 +6,16 @@ from nicurx_app.models import *
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+from selenium.webdriver.chrome.options import Options
 import time
 
 class SeleniumTests(LiveServerTestCase):
     
     # Setup the browser interface. In this case Mozilla Firefox is being used
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.headless = True
+        self.browser = webdriver.Chrome(options=options)
 
     # TEST 1: Test to ensure the main page is loaded correctly 
     def testHomePage(self):
