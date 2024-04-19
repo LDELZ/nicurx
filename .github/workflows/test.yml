@@ -17,9 +17,20 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      - name: Install Firefox and geckodriver
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y firefox
+          wget https://github.com/mozilla/geckodriver/releases/download/v0.32.0/geckodriver-v0.32.0-linux64.tar.gz
+          tar -xvzf geckodriver-v0.32.0-linux64.tar.gz
+          chmod +x geckodriver
+          sudo mv geckodriver /usr/local/bin/
+
       - name: Install dependencies
         run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
       - name: Run Django test
         run: |
           python manage.py test
+
