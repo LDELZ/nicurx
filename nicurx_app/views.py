@@ -398,28 +398,32 @@ def patient_search(request):
         return redirect('guardian-search')
     
 class PatientPDFView(generic.DetailView):
+   # Define base model as the patient model; most information will come from this model
+   # Additional methods will gather information from related models
    model = Patient
 
+   # Method to get all details about related medication profile, associated medications, and associated doses
    def get_medication_details(self, patient):
+      
+      # Establish a new 
+      medications_with_doses = []
+      if patient.medication_profile:
+         medications_with_doses = MedicationDosage.objects.filter(
+            profile=patient.medication_profile).select_related('medication')
 
-        medications_with_doses = []
-        if patient.medication_profile:
-            medications_with_doses = MedicationDosage.objects.filter(
-                profile=patient.medication_profile).select_related('medication')
+         medications_context = []
+         for local_medication in medications_with_doses:
+            calculated_dose = local_medication.medication.dose_limit * patient.weight
+            medication_info = {
+               'medication_name': local_medication.medication.medication_name,
+               'dose': local_medication.dose,
+               'dose_limit': local_medication.medication.dose_limit,
+               'calculated_dose': calculated_dose,
+               'issue': local_medication.dose > calculated_dose
+            }
+            medications_context.append(medication_info)
 
-            medications_context = []
-            for local_medication in medications_with_doses:
-                calculated_dose = local_medication.medication.dose_limit * patient.weight
-                medication_info = {
-                    'medication_name': local_medication.medication.medication_name,
-                    'dose': local_medication.dose,
-                    'dose_limit': local_medication.medication.dose_limit,
-                    'calculated_dose': calculated_dose,
-                    'issue': local_medication.dose > calculated_dose
-                }
-                medications_context.append(medication_info)
-
-        return medications_context
+      return medications_context
 
    def get(self, request, *args, **kwargs):
          response = HttpResponse(content_type='application/pdf')
@@ -505,9 +509,6 @@ class PatientPDFView(generic.DetailView):
          pdf_render_x_position = 100
          new_pdf.setFont("Helvetica", 12)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Profile: { patient.medication_profile.title }")
-
-         pdf_render_y_position -= render_position_change
-         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Number of Medications: { patient.medication_profile.number_medications() }")
 
          pdf_render_y_position -= render_position_change
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Active Issues: { patient.medication_profile.number_medications() }")
