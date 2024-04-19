@@ -23,4 +23,4 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run Django test
         run: |
-          python manage.py test nicurx_app.tests.test_forms
+          python manage.py test nicurx_app.tests.test_forms nicurx_app.tests.test_models nicurx_app.tests.test_views
