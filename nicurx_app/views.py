@@ -133,14 +133,14 @@ class PatientDetailView(generic.DetailView):
                 profile=patient.medication_profile).select_related('medication')
 
             medications_context = []
-            for md in medications_with_doses:
-                calculated_dose = md.medication.dose_limit * patient.weight
+            for local_medication in medications_with_doses:
+                calculated_dose = local_medication.medication.dose_limit * patient.weight
                 medication_info = {
-                    'medication_name': md.medication.medication_name,
-                    'dose': md.dose,
-                    'dose_limit': md.medication.dose_limit,
+                    'medication_name': local_medication.medication.medication_name,
+                    'dose': local_medication.dose,
+                    'dose_limit': local_medication.medication.dose_limit,
                     'calculated_dose': calculated_dose,
-                    'issue': calculated_dose > md.medication.dose_limit
+                    'issue': calculated_dose > local_medication.medication.dose_limit
                 }
                 medications_context.append(medication_info)
 
@@ -398,19 +398,40 @@ def patient_search(request):
         return redirect('guardian-search')
     
 class PatientPDFView(generic.DetailView):
-    model = Patient
+   model = Patient
 
-    def get(self, request, *args, **kwargs):
+   def get_medication_details(self, patient):
+
+        medications_with_doses = []
+        if patient.medication_profile:
+            medications_with_doses = MedicationDosage.objects.filter(
+                profile=patient.medication_profile).select_related('medication')
+
+            medications_context = []
+            for local_medication in medications_with_doses:
+                calculated_dose = local_medication.medication.dose_limit * patient.weight
+                medication_info = {
+                    'medication_name': local_medication.medication.medication_name,
+                    'dose': local_medication.dose,
+                    'dose_limit': local_medication.medication.dose_limit,
+                    'calculated_dose': calculated_dose,
+                    'issue': local_medication.dose > calculated_dose
+                }
+                medications_context.append(medication_info)
+
+        return medications_context
+
+   def get(self, request, *args, **kwargs):
          response = HttpResponse(content_type='application/pdf')
          response['Content-Disposition'] = 'attachment; filename="patient_info.pdf"'
 
-         p = canvas.Canvas(response, pagesize=letter)         
+         new_pdf = canvas.Canvas(response, pagesize=letter)         
 
          # Print the company logo
          image_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'brand.png')
-         p.drawImage(image_path, 100, 670, width=400, height=80)
+         new_pdf.drawImage(image_path, 100, 670, width=400, height=80)
          patient = self.get_object()
-         medications = patient.medication_profile.medications.all() if patient.medication_profile else []
+         medications_details = self.get_medication_details(patient)
 
          url = 'http://127.0.0.1:8000/patient/' + str(patient.id)
          qr_code = qr.QrCodeWidget(url)
@@ -418,90 +439,91 @@ class PatientPDFView(generic.DetailView):
          qr_width = bounds[2] - bounds[0]
          qr_height = bounds[3] - bounds[1]
 
-         d = Drawing(200, 200, transform=[200./qr_width, 0, 0, 200./qr_height, 0, 0])
-         d.add(qr_code)
+         image_qr_code = Drawing(200, 200, transform=[200./qr_width, 0, 0, 200./qr_height, 0, 0])
+         image_qr_code.add(qr_code)
          page_width, page_height = letter
-         x = page_width - 210
-         y = 10
-         renderPDF.draw(d, p, x, y)
-         p.setFont("Helvetica", 10)
-         p.setFillColor(black)
-         p.drawString(x+28, y+12, f"{url}")
+         pdf_render_x_position = page_width - 210
+         pdf_render_y_position = 10
+         renderPDF.draw(image_qr_code, new_pdf, pdf_render_x_position, pdf_render_y_position)
+         new_pdf.setFont("Helvetica", 10)
+         new_pdf.setFillColor(black)
+         new_pdf.drawString(pdf_render_x_position+28, pdf_render_y_position+12, f"{url}")
 
          custom_color = Color(0.106,0.259,0.361)
-         y = 650
-         x = 220
+         pdf_render_y_position = 650
+         pdf_render_x_position = 220
 
          # Print the header
-         p.setFont("Helvetica-Bold", 16)
-         p.setFillColor(custom_color)
-         p.drawString(x, y, f"Detailed Patient Report")
+         new_pdf.setFont("Helvetica-Bold", 16)
+         new_pdf.setFillColor(custom_color)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Detailed Patient Report")
 
-         x = 50
-         difference = 20
+         pdf_render_x_position = 50
+         render_position_change = 20
          # Print the details
-         y -= difference * 2
-         p.setFont("Helvetica-Bold", 14)
-         p.setFillColor(black)
-         p.drawString(x, y, f"Personal Information")
+         pdf_render_y_position -= render_position_change * 2
+         new_pdf.setFont("Helvetica-Bold", 14)
+         new_pdf.setFillColor(black)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Personal Information")
 
-         x = 100
-         y -= difference
-         p.setFont("Helvetica", 12)
-         p.drawString(x, y, f"Patient Name: {patient.first_name} {patient.last_name}")
+         pdf_render_x_position = 100
+         pdf_render_y_position -= render_position_change
+         new_pdf.setFont("Helvetica", 12)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Patient Name: {patient.first_name} {patient.last_name}")
 
-         y -= difference
-         p.drawString(100, y, f"ID Number: {patient.id_number}")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(100, pdf_render_y_position, f"ID Number: {patient.id_number}")
 
-         y -= difference
-         p.drawString(100, y, f"Date of Birth: {patient.date_of_birth}")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(100, pdf_render_y_position, f"Date of Birth: {patient.date_of_birth}")
 
-         y -= difference
-         p.drawString(100, y, f"Guardian Name: {patient.guardian_name}")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(100, pdf_render_y_position, f"Guardian Name: {patient.guardian_name}")
          
-         x = 50
-         y -= difference * 2
-         p.setFont("Helvetica-Bold", 14)
-         p.drawString(x, y, f"Body Metrics")
+         pdf_render_x_position = 50
+         pdf_render_y_position -= render_position_change * 2
+         new_pdf.setFont("Helvetica-Bold", 14)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Body Metrics")
 
-         y -= difference
-         x = 100
-         p.setFont("Helvetica", 12)
-         p.drawString(x, y, f"Weight (kg): {patient.weight}")
+         pdf_render_y_position -= render_position_change
+         pdf_render_x_position = 100
+         new_pdf.setFont("Helvetica", 12)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Weight (kg): {patient.weight}")
 
-         y -= difference
-         p.drawString(x, y, f"Height (cm): {patient.height}")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Height (cm): {patient.height}")
 
-         y -= difference
-         p.drawString(x, y, f"BSA (m^2): {patient.calculate_bsa():.2f}")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"BSA (m^2): {patient.calculate_bsa():.2f}")
 
-         x = 50
-         y -= difference * 2
-         p.setFont("Helvetica-Bold", 14)
-         p.drawString(x, y, "Medication Profile:")
+         pdf_render_x_position = 50
+         pdf_render_y_position -= render_position_change * 2
+         new_pdf.setFont("Helvetica-Bold", 14)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, "Medication Profile:")
 
-         y -= difference
-         x = 100
-         p.setFont("Helvetica", 12)
-         p.drawString(x, y, f"Profile: { patient.medication_profile.title }")
+         pdf_render_y_position -= render_position_change
+         pdf_render_x_position = 100
+         new_pdf.setFont("Helvetica", 12)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Profile: { patient.medication_profile.title }")
 
-         y -= difference
-         p.drawString(x, y, f"Number of Medications: { patient.medication_profile.number_medications() }")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Number of Medications: { patient.medication_profile.number_medications() }")
 
-         y -= difference
-         p.drawString(x, y, f"Active Issues: { patient.medication_profile.number_medications() }")
+         pdf_render_y_position -= render_position_change
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Active Issues: { patient.medication_profile.number_medications() }")
 
-         x = 50
-         y -= difference * 2
-         p.setFont("Helvetica-Bold", 14)
-         p.drawString(x, y, "Medications:")
-         p.setFont("Helvetica", 12)
-         for medication in medications:
-            y -= 20
-            p.drawString(120, y, f"{medication.medication_name}")
+         pdf_render_x_position = 50
+         pdf_render_y_position -= render_position_change * 2
+         new_pdf.setFont("Helvetica-Bold", 14)
+         new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, "Medications:")
+         new_pdf.setFont("Helvetica", 12)
 
-         p.showPage()
-         p.save()
+         for medication in medications_details:
+            pdf_render_y_position -= render_position_change
+            new_pdf.drawString(120, pdf_render_y_position, f"Medication: {medication['medication_name']} {medication['dose']} mg:  {'Warning!' if medication['issue'] else 'No issues'}")
+
+         new_pdf.showPage()
+         new_pdf.save()
 
          return response
 #--------------------------------------------------------------------------------------------
