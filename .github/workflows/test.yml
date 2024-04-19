@@ -12,9 +12,7 @@ jobs:
         python-version: ["3.11.6"]
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
@@ -30,8 +28,8 @@ jobs:
             sudo chmod +x /usr/local/bin/geckodriver
 
       - name: Install dependencies
-        run: |
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        run: pip install -r requirements.txt
+        
       - name: Run Django test
         run: |
           python manage.py test
