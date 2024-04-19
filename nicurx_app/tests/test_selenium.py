@@ -4,10 +4,8 @@ from nicurx_app.models import *
 
 # Web Driver (importing selenium, geckodriver, and webdriver_manager)
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service as FirefoxService
-from webdriver_manager.firefox import GeckoDriverManager
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver import Firefox
 
 # Keys and By used for finding elements and executing keyboard functions
 from selenium.webdriver.common.keys import Keys
@@ -19,7 +17,9 @@ class SeleniumTests(LiveServerTestCase):
     
     # Setup the browser interface. In this case Mozilla Firefox is being used
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        options = Options()
+        options.add_argument("--headless")
+        self.browser = Firefox(options=options)
 
     # TEST 1: Test to ensure the main page is loaded correctly 
     def testHomePage(self):
