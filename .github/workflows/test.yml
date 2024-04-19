@@ -20,6 +20,9 @@ jobs:
       - name: Install Firefox
         run: sudo apt-get update && sudo apt-get install -y firefox
 
+      - name: Install Firefox dependencies
+        run: sudo apt-get install -y libgtk-3-0 libdbus-glib-1-2 xvfb
+      
       - name: Install GeckoDriver
         run: |
             wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz

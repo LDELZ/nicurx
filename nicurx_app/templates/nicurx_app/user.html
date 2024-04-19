@@ -11,19 +11,13 @@
   <div class="card-body" style="text-align: center;">
       <p class="card-text">
           <div class="container">
-            <a class="btn btn-primary" href="{% url 'logout'%}" role="button">Logout</a>
+            <a class="btn btn-primary custom-btn-primary" href="{% url 'medication_list'%}">View Medications</a><br><br>
+            <a class="btn btn-primary custom-btn-primary" href="{% url 'logout'%}">Logout</a>
                 </div>
       </p>
   </div>
 </div>
 
-
-    <form method="POST" action="" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-
-        <input class="btn btn-primary" type="submit" name = "Update">
-    </form>
 
 </div>
 {% endblock %}
