@@ -2,25 +2,22 @@ from django.test import LiveServerTestCase
 from nicurx_app.models import *
 
 
-# Web Driver (importing selenium, geckodriver, and webdriver_manager)
+# Firefox webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.service import Service as FirefoxService
 
-# Keys and By used for finding elements and executing keyboard functions
+# Keyboard functions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 import time
 
 class SeleniumTests(LiveServerTestCase):
     
-    # Setup the browser interface. In this case Mozilla Firefox is being used. Run in headless mode
+    # Setup the browser interface. In this case Mozilla Firefox is being used
     def setUp(self):
         options = Options()
-        options.binary_location = "/usr/bin/firefox"  # Specify the path to the Firefox binary
         options.add_argument("--headless")
-        service = FirefoxService(executable_path="/usr/local/bin/geckodriver")
-        self.browser = Firefox(service=service, options=options)
+        self.browser = Firefox(options=options)
 
     # TEST 1: Test to ensure the main page is loaded correctly 
     def testHomePage(self):
