@@ -12,21 +12,14 @@ jobs:
         python-version: ["3.11.6"]
     steps:
       - uses: actions/checkout@v3
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Firefox (non-snap_)
-        run: |
-          sudo apt-get install -y software-properties-common
-          sudo add-apt-repository ppa:mozillateam/firefox-next
-          sudo apt-get update
-          sudo apt-get install -y firefox
-
-      - name: Install Firefox dependencies
-        run: sudo apt-get install -y libgtk-3-0 libdbus-glib-1-2 xvfb
-      
+      - name: Install Firefox
+        run: sudo apt-get update && sudo apt-get install -y firefox
+  
       - name: Install GeckoDriver
         run: |
             wget https://github.com/mozilla/geckodriver/releases/download/v0.30.0/geckodriver-v0.30.0-linux64.tar.gz
@@ -35,8 +28,8 @@ jobs:
             sudo chmod +x /usr/local/bin/geckodriver
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Run Django test
         run: |
           python manage.py test
