@@ -2,12 +2,8 @@ from django.test import LiveServerTestCase
 from nicurx_app.models import *
 
 
-# Firefox webdriver
-from selenium.webdriver.firefox.options import Options
-from selenium.webdriver import Firefox
-from selenium.webdriver.firefox.service import Service
-
-# Keyboard functions
+# Web Driver imports
+from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 import time
@@ -16,9 +12,7 @@ class SeleniumTests(LiveServerTestCase):
     
     # Setup the browser interface. In this case Mozilla Firefox is being used
     def setUp(self):
-        options = Options()
-        service = Service(executable_path='/usr/bin/firefox')
-        self.browser = Firefox(options=options, service=service)
+        self.browser = webdriver.Firefox()
 
     # TEST 1: Test to ensure the main page is loaded correctly 
     def testHomePage(self):
