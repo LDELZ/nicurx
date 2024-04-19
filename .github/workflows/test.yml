@@ -17,18 +17,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Install Chrome and ChromeDriver
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y wget unzip
-          sudo apt-get install -y libxss1 libappindicator1 libindicator7
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          sudo dpkg -i google-chrome-stable_current_amd64.deb
-          sudo apt-get install -f
-          wget https://chromedriver.storage.googleapis.com/111.0.5563.20/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@v1.1.0
 
       - name: Install dependencies
         run: |
