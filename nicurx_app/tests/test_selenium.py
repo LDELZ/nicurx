@@ -14,7 +14,7 @@ import time
 
 class SeleniumTests(LiveServerTestCase):
     
-    # Setup the browser interface. In this case Mozilla Firefox is being used
+    # Setup the browser interface. In this case Mozilla Firefox is being used. Run in headless mode
     def setUp(self):
         options = Options()
         options.binary_location = "/usr/bin/firefox"  # Specify the path to the Firefox binary
