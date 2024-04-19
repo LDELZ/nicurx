@@ -1,21 +1,21 @@
-from django.test import LiveServerTestCase
+from django.test import TestCase, LiveServerTestCase
 from nicurx_app.models import *
 
 
 # Web Driver imports
 from selenium import webdriver
+from selenium.webdriver.firefox.service import Service as FirefoxService
+
+# Input imports
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
-from selenium.webdriver.chrome.options import Options
 import time
 
 class SeleniumTests(LiveServerTestCase):
     
     # Setup the browser interface. In this case Mozilla Firefox is being used
     def setUp(self):
-        options = Options()
-        options.headless = True
-        self.browser = webdriver.Chrome(options=options)
+        self.browser = webdriver.Firefox()
 
     # TEST 1: Test to ensure the main page is loaded correctly 
     def testHomePage(self):
@@ -35,8 +35,8 @@ class SeleniumTests(LiveServerTestCase):
     def testLoginForm(self):
         self.browser.get("http://127.0.0.1:8000/accounts/login")
         time.sleep(1)
-        self.browser.find_element(By.XPATH, "//form//table//tr[1]//input").send_keys("test3")
-        self.browser.find_element(By.XPATH, "//form//table//tr[2]//input").send_keys("zxcvbnm1234567")
+        self.browser.find_element(By.XPATH, "//form//table//tr[1]//input").send_keys("sprint2")
+        self.browser.find_element(By.XPATH, "//form//table//tr[2]//input").send_keys("password777")
         time.sleep(1)
         self.browser.find_element(By.XPATH, "//input[@type='submit']").click()
         time.sleep(1)
