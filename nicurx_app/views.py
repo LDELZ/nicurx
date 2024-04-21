@@ -1,24 +1,33 @@
+# Fundamental imports
+import os
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
-from .models import *
+
+# User authentication imports
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
+from .decorators import allowed_users
+
+# Dependency imports
 from django.utils import timezone
 from django.views import generic
-from .forms import PatientForm, CreateUserForm, SupervisorForm, MedicationForm, ProfileForm
 from django.contrib import messages
 from django.contrib.auth.models import Group
-from django.contrib.auth import logout
-import os
-from reportlab.lib.colors import Color, black
 from django.conf import settings
 from django.templatetags.static import static
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.graphics.barcode import qr
+from django.db.models import Count
+
+# Model/ form imports
+from .models import *
+from .forms import PatientForm, CreateUserForm, SupervisorForm, MedicationForm, ProfileForm
+
+# ReportLab imports
+from django.http import HttpResponse
 from reportlab.graphics import renderPDF
 from reportlab.graphics.shapes import Drawing
-from django.contrib.auth.decorators import login_required
-from .decorators import allowed_users
-from django.db.models import Count
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.colors import Color, black
+from reportlab.graphics.barcode import qr
 
 # User authentication views
 #--------------------------------------------------------------------------------------------
@@ -129,8 +138,7 @@ class PatientDetailView(generic.DetailView):
         patient = context['object']
 
         if patient.medication_profile:
-            medications_with_doses = MedicationDosage.objects.filter(
-                profile=patient.medication_profile).select_related('medication')
+            medications_with_doses = MedicationDosage.objects.filter(profile=patient.medication_profile).select_related('medication')
 
             medications_context = []
             for local_medication in medications_with_doses:
@@ -388,30 +396,43 @@ def deleteMedication(request, medication_id):
 
 # Exploration views
 #--------------------------------------------------------------------------------------------
+# Search Bar implementation
 def patient_search(request):
-    id_number = request.GET.get('id_number')
+    id_number_lookup = request.GET.get('id_number')
     try:
-        patient = Patient.objects.get(id_number=id_number)
+        patient = Patient.objects.get(id_number=id_number_lookup)
         return redirect(patient.get_absolute_url())
     except Patient.DoesNotExist:
-        messages.error(request, "No patient with that ID number exists.")
+        messages.error(request, "No patients with that ID number exist")
         return redirect('guardian-search')
     
+# PDF and QR Code implementation
 class PatientPDFView(generic.DetailView):
    # Define base model as the patient model; most information will come from this model
    # Additional methods will gather information from related models
    model = Patient
 
    # Method to get all details about related medication profile, associated medications, and associated doses
+   # This method is required to setup the context of information associated with the patient
+   # It is similar to the Patient Detail View, though the variables will be used to draw the PDF instead
    def get_medication_details(self, patient):
       
-      # Establish a new 
+      # Create an empty list to store the medications associated with this patient
       medications_with_doses = []
-      if patient.medication_profile:
-         medications_with_doses = MedicationDosage.objects.filter(
-            profile=patient.medication_profile).select_related('medication')
 
+      # Test if the patient has an assigned medication profile; this is not mandatory since patients cannot be created
+      # without assigning a medication profile. I included this test in case that requirement is removed later
+      if patient.medication_profile:
+
+         # Query the database for MedicationDosage objects and filter if they match the current patient's medication profile ID
+         # Assign those matching medications to the list of medication_with_doses
+         # This is required because each patient's medication profile will have different doses related only to them and are generated procedurally
+         medications_with_doses = MedicationDosage.objects.filter(profile=patient.medication_profile).select_related('medication')
+
+         # Declare a new list to store the context data for each medication associated with this patient's profile
          medications_context = []
+
+         # Iterate through the list of medications_with_doses and retrieve all information to be displayed on the PDF
          for local_medication in medications_with_doses:
             calculated_dose = local_medication.medication.dose_limit * patient.weight
             medication_info = {
@@ -421,55 +442,56 @@ class PatientPDFView(generic.DetailView):
                'calculated_dose': calculated_dose,
                'issue': local_medication.dose > calculated_dose
             }
+
+            # Append the newly defined information to the medications_context list, finalizing the list with all necessary information
+            # This allows for the view to retrieve information by variable name when generating the PDF
             medications_context.append(medication_info)
 
       return medications_context
 
+   # Define a new method to handle when the user clicks the PDF download button; handles server GET method initiated
    def get(self, request, *args, **kwargs):
-         response = HttpResponse(content_type='application/pdf')
-         response['Content-Disposition'] = 'attachment; filename="patient_info.pdf"'
-
-         new_pdf = canvas.Canvas(response, pagesize=letter)         
-
-         # Print the company logo
-         image_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'brand.png')
-         new_pdf.drawImage(image_path, 100, 670, width=400, height=80)
+         
+         # Define a new patient variable and call the get_details method above to get the context information for this patient
          patient = self.get_object()
          medications_details = self.get_medication_details(patient)
 
-         url = 'http://127.0.0.1:8000/patient/' + str(patient.id)
-         qr_code = qr.QrCodeWidget(url)
-         bounds = qr_code.getBounds()
-         qr_width = bounds[2] - bounds[0]
-         qr_height = bounds[3] - bounds[1]
+         # Inform the browser that the response should be handled as a PDF file
+         # Then inform it to handle the response as a downloadable file with a pdf extension
+         response = HttpResponse(content_type='application/pdf')
+         response['Content-Disposition'] = 'attachment; filename="patient_info.pdf"'
 
-         image_qr_code = Drawing(200, 200, transform=[200./qr_width, 0, 0, 200./qr_height, 0, 0])
-         image_qr_code.add(qr_code)
-         page_width, page_height = letter
-         pdf_render_x_position = page_width - 210
-         pdf_render_y_position = 10
-         renderPDF.draw(image_qr_code, new_pdf, pdf_render_x_position, pdf_render_y_position)
-         new_pdf.setFont("Helvetica", 10)
-         new_pdf.setFillColor(black)
-         new_pdf.drawString(pdf_render_x_position+28, pdf_render_y_position+12, f"{url}")
+         # Generate a new PDF canvas using the Canvas class from ReportLab using Letter paper size
+         # Assign it to a new variable to direct all draw commands to (this renders text and images to the page)
+         new_pdf = canvas.Canvas(response, pagesize=letter)         
+         page_width, page_height = letter         
 
+         # Print the company logo at the top
+         image_path = os.path.join(settings.BASE_DIR, 'static', 'images', 'brand.png')
+         image_x_pos = 100
+         image_y_pos = 670
+         new_pdf.drawImage(image_path, image_x_pos, image_y_pos, width=400, height=80)
+
+         # PDF Page title header - displays "Detailed Patient Report" under logo"
          custom_color = Color(0.106,0.259,0.361)
          pdf_render_y_position = 650
          pdf_render_x_position = 220
-
-         # Print the header
          new_pdf.setFont("Helvetica-Bold", 16)
          new_pdf.setFillColor(custom_color)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Detailed Patient Report")
 
+         # Set new variables for draw position (pixel offset from PDF page border)
          pdf_render_x_position = 50
          render_position_change = 20
+        
          # Print the details
+         # HEADER: Patient personal information title
          pdf_render_y_position -= render_position_change * 2
          new_pdf.setFont("Helvetica-Bold", 14)
          new_pdf.setFillColor(black)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Personal Information")
 
+         # BODY: Patient personal information
          pdf_render_x_position = 100
          pdf_render_y_position -= render_position_change
          new_pdf.setFont("Helvetica", 12)
@@ -484,11 +506,13 @@ class PatientPDFView(generic.DetailView):
          pdf_render_y_position -= render_position_change
          new_pdf.drawString(100, pdf_render_y_position, f"Guardian Name: {patient.guardian_name}")
          
+         # HEADER: Patient body metrics
          pdf_render_x_position = 50
          pdf_render_y_position -= render_position_change * 2
          new_pdf.setFont("Helvetica-Bold", 14)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Body Metrics")
 
+         # BODY: Patient body metrics
          pdf_render_y_position -= render_position_change
          pdf_render_x_position = 100
          new_pdf.setFont("Helvetica", 12)
@@ -500,30 +524,62 @@ class PatientPDFView(generic.DetailView):
          pdf_render_y_position -= render_position_change
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"BSA (m^2): {patient.calculate_bsa():.2f}")
 
+         # HEADER: Medication profile title
          pdf_render_x_position = 50
          pdf_render_y_position -= render_position_change * 2
          new_pdf.setFont("Helvetica-Bold", 14)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, "Medication Profile:")
 
+         # BODY: Medication profile title
          pdf_render_y_position -= render_position_change
          pdf_render_x_position = 100
          new_pdf.setFont("Helvetica", 12)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Profile: { patient.medication_profile.title }")
 
+         # BODY: Medication issues
          pdf_render_y_position -= render_position_change
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, f"Active Issues: { patient.medication_profile.number_medications() }")
 
+         # HEADER: Medications title
          pdf_render_x_position = 50
          pdf_render_y_position -= render_position_change * 2
          new_pdf.setFont("Helvetica-Bold", 14)
          new_pdf.drawString(pdf_render_x_position, pdf_render_y_position, "Medications:")
+         
+         # BODY: Display the medication details associated with the patient's medication profile
          new_pdf.setFont("Helvetica", 12)
-
          for medication in medications_details:
             pdf_render_y_position -= render_position_change
             new_pdf.drawString(120, pdf_render_y_position, f"Medication: {medication['medication_name']} {medication['dose']} mg:  {'Warning!' if medication['issue'] else 'No issues'}")
 
+         # QR Code drawing
+         # Build a new string representing the absolute URL for the patient detail page
+         server_url = 'http://127.0.0.1:8000'
+         url = server_url + '/patient/' + str(patient.id)
+
+         # Encode the string as a QR Code widget using ReportLab
+         qr_code = qr.QrCodeWidget(url)
+
+         dimension = 200
+         qr_code.barWidth = dimension
+         qr_code.barHeight = dimension
+
+         image_qr_code = Drawing(dimension, dimension)
+         image_qr_code.add(qr_code)
+         
+         pdf_render_x_position = page_width - 210
+         pdf_render_y_position = 10
+         renderPDF.draw(image_qr_code, new_pdf, pdf_render_x_position, pdf_render_y_position)
+
+         # Display the URL text beneath the QR Code for people who can't scan it
+         new_pdf.setFont("Helvetica", 10)
+         new_pdf.setFillColor(black)
+         new_pdf.drawString(pdf_render_x_position+28, pdf_render_y_position+12, f"{url}")
+
+         # Show the PDF page in a new browser window
          new_pdf.showPage()
+
+         # Save the PDF to the browser's download folder
          new_pdf.save()
 
          return response
