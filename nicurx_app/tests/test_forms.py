@@ -8,7 +8,8 @@ from nicurx_app.models import MedicationProfile
 # Create your tests here.
 class PatientFormTestCase(TestCase):
 
-    # SETUP: Create a Medication Profile for testing - test
+    # SETUP: Create a Medication Profile for testing
+
     def setUp(self):
 
         self.medication_profile=MedicationProfile.objects.create(
