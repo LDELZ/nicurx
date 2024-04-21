@@ -1,7 +1,7 @@
 {% extends 'nicurx_app/base_template.html' %}
 {% block content %}
 <br>
-<h1><strong>Patient Profile</strong></h1>
+<h1><strong>Patient Profile</strong></h1><a href="/patient_list/" class="btn btn-primary custom-btn-primary">Back to Patient List</a>
 <div class="card custom-card">
     {% if not patient.is_active %}
         {% with status="Inactive" %}
@@ -88,6 +88,6 @@
         <p> *Note: The dose limit is calculated by taking the medication's dose limit in mg per dosing unit and multiplying by the dosing unit</p>
     </div>
 </div>
-<br><a href="/patient_list/" class="btn btn-primary custom-btn-primary">Back to Patient List</a>
+<br>
 
 {% endblock %}
