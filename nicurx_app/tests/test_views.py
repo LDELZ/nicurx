@@ -8,7 +8,7 @@ import datetime
 class ViewTestCase(TestCase):
     def setUp(self):
 
-        # Create a test user
+        # Create a test user - demonstration
         self.user = User.objects.create_user(username='testuser', password='password123')
 
         # Create a Medication Profile for testing
