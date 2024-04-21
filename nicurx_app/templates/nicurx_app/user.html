@@ -1,0 +1,23 @@
+<!-- inherit from base.html -->
+{% extends 'nicurx_app/base_template.html' %}
+{% block content %}
+
+<br><div class="card custom-card">     
+  <div class="card-header custom-card-header style=text-align: left;">
+      <h5 class="mb-0">
+          <h3><strong>Welcome, supervisor {{user}}</strong></h3>
+      </h5>
+  </div>
+  <div class="card-body" style="text-align: center;">
+      <p class="card-text">
+          <div class="container">
+            <a class="btn btn-primary custom-btn-primary" href="{% url 'medication_list'%}">View Medications</a><br><br>
+            <a class="btn btn-primary custom-btn-primary" href="{% url 'logout'%}">Logout</a>
+                </div>
+      </p>
+  </div>
+</div>
+
+
+</div>
+{% endblock %}

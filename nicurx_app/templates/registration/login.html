@@ -1,0 +1,95 @@
+<!-- inherit from base.html-->
+{% extends "nicurx_app/base_template.html" %}
+{% load static %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+<div style="text-align: center;">
+    <br><img src="{% static 'images/brand_alpha.png' %}" width="500" height="100" style="display: block; margin: 0 auto;">
+    <br><h1><strong>Supervisor Login</strong></h1>
+
+    <div class="outerDiv"> 
+            <div class="myDiv">
+                <span class="textColor">
+                    <p>This functionality is intended for supervisors to design medications that will be applied to patients created by
+                        practitioners. If you are a supervisor, login below to access the medication database.</p>
+                </span>
+            </div>
+        </div>
+    </div>
+<br><div class="card custom-card">     
+    <div class="card-header custom-card-header style=text-align: left;">
+        <h5 class="mb-0">
+            <h3><strong>Login</strong></h3>
+        </h5>
+    </div>
+    {% if user.is_authenticated %}
+      <h3><br>Logged in as {{ user.username }}<br></h3>
+      <p><a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
+    <div class="card-body" style="text-align: center;">
+      <p class="card-text">
+          <div class="container">
+                {% for message in messages %}
+                  <p>{{message}}</p>
+                {% endfor %}
+
+                {% if form.errors %}
+                  <p>Your username and password didn't match. Please try again.</p>
+                {% endif %}
+
+                {% if next %}
+                  {% if user.is_authenticated %}
+                    <p>Your account doesn't have access to this page. To proceed,
+                    please login with an account that has access.</p>
+                  {% else %}
+                    <p>Please login to see this page.</p>
+                  {% endif %}
+                {% endif %}
+      
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <style>
+    table {
+        width: 20%;
+        margin: auto;
+    }
+    td {
+        text-align: center;
+        padding: 10px;
+    }
+    input[type="submit"] {
+        width: 5%;
+        padding: 5px;
+        margin-top: 10px;
+    }
+  </style>
+  <table>
+    <tr>
+      <td>{{ form.username.label_tag }}</td>
+      <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+      <td>{{ form.password.label_tag }}</td>
+      <td>{{ form.password }}</td>
+    </tr>
+  </table>
+  <input type="submit" value="Login">
+  <input type="hidden" name="next" value="{{ next }}">
+</form>
+
+<p><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
+<p><a href="{% url 'register_page' %}">Register</a></p>                
+                  </div>
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+<br><a href="{% url 'index' %}" class="btn btn-primary custom-btn-primary">Back</a>
+
+{% endblock %}
+
+
+
+

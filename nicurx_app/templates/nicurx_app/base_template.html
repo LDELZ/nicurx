@@ -29,19 +29,22 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav">
             <a class="nav-link active me-4" aria-current="page" href="{% url 'index' %}">Home</a>
-            <a class="nav-link active me-4" aria-current="page" href="{% url 'patient_list' %}">Practitioners</a>
-            <a class="nav-link active me-4" aria-current="page" href="{% url 'patient_grid' %}">Patients</a>
-            <a class="nav-link active me-4" aria-current="page" href="{% url 'patient_history' %}">History</a>
+            <a class="nav-link active me-4" aria-current="page" href="{% url 'patient_list' %}">Patient Details</a>
+            <a class="nav-link active me-4" aria-current="page" href="{% url 'patient_grid' %}">Patient List</a>
+            <a class="nav-link active me-4" aria-current="page" href="{% url 'patient_history' %}">Patient History</a>
+            <a class="nav-link active me-4" aria-current="page" href="{% url 'medication_list' %}">Medication Details</a>
             <a class="nav-link active" aria-current="page" href="{% url 'profile_grid' %}">Medication Profiles</a>
           </div>
-            <div class="ms-auto">
-              <a class="nav-link active" aria-current="page" href="/supervisor_login/" style="color: white">Login</a>
+          <div class="ms-auto d-flex align-items-center">
             {% if user.is_authenticated %}
-                
+              <span class="navbar-text text-white me-2">
+                <a class="nav-link active" aria-current="page" href="{% url 'user_page' %}" style="color: white">Welcome {{ user.username }}!</a>
+              </span>
+              <a class="nav-link active" aria-current="page" href="{% url 'logout' %}" style="color: white">Logout</a>
             {% else %}
-                <a class="nav-link" href="{% url 'login' %}?next={{ request.path }}">Login</a>
+              <a class="nav-link active" aria-current="page" href="{% url 'login' %}" style="color: white">Login</a>
             {% endif %}
-        </div>
+          </div>
         
          </div>
        </div>
@@ -59,18 +62,26 @@
 
 <!-- Footer -->
 <img src="{% static 'images/stork.png' %}" alt="Character Image" class="fixed-character">
-<footer class="footer">
-  <div class="footer-links">
-    <div>
-      <a href="/contact_info/">Contact Us</a>
-    </div>
-    <a href="/disclaimer/">Disclaimer</a>
-    <div>
-      <a href="/accessibility/">Accessibility</a>
-    </div>
-    <div>
-      Version 0.0.1
-    </div>
+<nav class="navbar navbar-expand-lg bg-body-tertiary custom-navbar-color fixed-bottom">
+  <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link active me-4" aria-current="page" href="{% url 'disclaimer' %}">Disclaimer</a>
+          <a class="nav-link active me-4" aria-current="page" href="{% url 'contact' %}">Contact Us</a>
+          <a class="nav-link active me-4" aria-current="page" href="{% url 'accessibility' %}">Accessibility</a>
+        </div>
+        <div class="ms-auto d-flex align-items-center">
+              <span class="navbar-text text-white me-2">
+              </span>
+              <a class="nav-link active" aria-current="page" style="color: white">Version 0.0.1</a>
+          </div>
+        </div>
+      </div>
   </div>
-</footer>
+</nav>
+
+
 

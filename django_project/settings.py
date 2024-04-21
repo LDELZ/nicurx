@@ -134,3 +134,7 @@ STATICFILES_DIRS = [
 ]
 
 MEDIA_URL = '/images/'
+LOGIN_REDIRECT_URL='user_page'
+LOGOUT_REDIRECT_URL='logout_page'
+
+SILENCED_SYSTEM_CHECKS = ['urls.W005']

@@ -1,0 +1,26 @@
+# test.yml
+name: Run Django Tests
+on:
+  push:
+    branches: [Sprint02]
+jobs:
+  test-django-app:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11.6"]
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+      - name: Run Django test
+        run: |
+          python manage.py test nicurx_app.tests.test_forms nicurx_app.tests.test_models nicurx_app.tests.test_views

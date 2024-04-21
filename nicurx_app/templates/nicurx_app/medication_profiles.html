@@ -6,8 +6,9 @@
 {% block content %}
 <div style="text-align: center;">
     <br><h1><strong>Medication Profiles</strong></h1>
+    <br><a href="{% url 'create-profile' %}" class="btn btn-primary custom-btn-primary">New Medication Profile</a>
 </div>
-<div class="container">
+<br><div class="container">
     <div class="row justify-content-between">
         <div class="col-auto">
             <a href="/profile_grid/" class="btn btn-primary custom-btn-primary">Sort by Name</a>
@@ -22,7 +23,6 @@
       <div class="row" style="background-color: #1b425c; color: white">
         <div class="col text-start">Profile Name</div>
         <div class="col text-start">Profile ID</div>
-        <div class="col text-start">Number of Medications</div>
       </div>
   </div>
   <div class="container">
@@ -34,7 +34,6 @@
     {% endif %}
             <div class="col text-start"><a href="{% url 'profile-detail' i.id %}">{{ i.title }}</a></div>
             <div class="col text-start">{{ i.id_number }}</div>
-            <div class="col text-start">{{ i.number_medications }}</div>
         </div>
       {% empty %}<div class="">There are no current profiles</div>
 {% endfor %}

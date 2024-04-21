@@ -3,9 +3,9 @@
 
 <!-- Replace block content in base_template.html -->
 {% block content %}
-<h1><strong>Patient Profile</strong></h1>
+<h1><strong>Medication List Profile</strong></h1>
 <div class="card custom-card">
-    <div class="card-header custom-card-header d-flex justify-content-between align-items-center">Patient Information</div>
+    <div class="card-header custom-card-header d-flex justify-content-between align-items-center">Profile Details</div>
 <div class="card-body" style="text-align: left;">
     <p class="card-text">
         
@@ -16,7 +16,7 @@
             </table>
             <br>
             <input type="submit" name="Submit" value="Submit">
-            <a href="{% url 'patient_list' %}" class="btn btn-primary custom-btn-primary" style="padding-top: 3px; padding-bottom: 3px;">Cancel</a>
+            <a href="{% url 'profile_grid' %}" class="btn btn-primary custom-btn-primary" style="padding-top: 3px; padding-bottom: 3px;">Cancel</a>
         </form>
     
     </p>

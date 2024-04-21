@@ -1,8 +1,47 @@
 {% extends 'nicurx_app/base_template.html' %}
 {% block content %}
-<h1><strong>Student Name: </strong>{{ student.name }}</h1>
+<br>
+<h1><strong>Profile of Medications</strong></h1>
 
-<p><strong>Email:</strong> {{ student.email }}</p>
-<p><strong>Major:</strong> {{ student.major }}</p>
-<p><strong>Portfolio: <a href="{{ student.portfolio.get_absolute_url}}" style="color: #2C51A0;">{{ student.portfolio.title }}</a>&nbsp;&nbsp;
+        <div class="card custom-card" style="margin-bottom: 1rem;">
+            <div class="card-header custom-card-header style=text-align: left;">
+                <h5 class="mb-0">
+                    <div class="container">
+                    <div class="row">
+                        <div class="col text-start">Title: {{ profile.title }}</div>
+                        <div class="col text-start">ID: {{ profile.id_number }}</div>
+                        <div class="col text-start">Number meds: {{ medications_with_doses|length }}</div>
+                        <div class="d-flex col-md-auto">
+                            <a href="{% url 'update-profile' profile_id=profile.id %}" class="btn btn-primary custom-btn-secondary me-1">Edit</a>
+                            <a href="{% url 'delete-profile' profile_id=profile.id %}" class="btn btn-primary custom-btn-secondary me-1">Delete</a>
+                        </div>
+                </h5>
+            </div>
+
+            <div class="d-flex col-md-auto">
+                <div class="card-body" style="text-align: left; color: black;">
+                    <h5 class="card-title"><strong>Medications: </strong></h5>
+                        <ul style="list-style-type: none">
+                            {% if medications_with_doses %}
+                            <ul><strong>
+                                {% for medication in medications_with_doses %}
+                                    <li>{{ medication.medication.medication_name }} - {{ medication.dose }} MG per {{ medication.medication.calculation_unit }}</li>
+                                {% endfor %}
+                            </strong></ul>
+                        {% else %}
+                            <p>No medications found for this profile.</p>
+                        {% endif %}
+                        
+                        </ul>
+                    </p>
+                </div>
+            </div>
+            </div>
+            </a>
+        </div>
+    </div>
+
+   
+<br><a href="/profile_grid/" class="btn btn-primary custom-btn-primary">Back to medication profiles</a>
+
 {% endblock %}

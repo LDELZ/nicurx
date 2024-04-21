@@ -1,0 +1,49 @@
+<!-- inherit from base.html-->
+{% extends "nicurx_app/base_template.html" %}
+{% load static %}
+
+<!-- Replace block content in base_template.html -->
+{% block content %}
+<div style="text-align: center;">
+    <br><img src="{% static 'images/brand_alpha.png' %}" width="500" height="100" style="display: block; margin: 0 auto;">
+    <br><h1><strong>Welcome to NICURx!</strong></h1>
+    <br>
+<div class="outerDiv"> 
+        <div class="myDiv">
+            <span class="textColor">
+                <p>Use the search bar below to search for a patient using their ID number. Their detailed aptient page will appear if that patient exists.</p>
+            </span>
+        </div>
+    </div> 
+</div>
+
+<br><div class="card custom-card">     
+    <div class="card-header custom-card-header style=text-align: left;">
+        <h5 class="mb-0">
+            <h3><strong>Enter an ID number</strong></h3>
+        </h5>
+    </div>
+    <div class="card-body" style="text-align: center;">
+        <p class="card-text">
+            <div class="container">
+
+    <form action="{% url 'patient-search' %}" method="get">
+        <input type="text" name="id_number" placeholder="Enter Patient ID" required>
+        <button type="submit">Search</button>
+        {% if messages %}
+            {% for message in messages %}
+                <br>{{ message }}
+            {% endfor %}
+        {% endif %}
+
+
+    </form>
+    
+                  </div>
+        </p>
+    </div>
+</div>
+
+</div>
+
+{% endblock content %}

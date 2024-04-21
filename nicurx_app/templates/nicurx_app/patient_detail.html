@@ -11,12 +11,19 @@
         </div>        
         {% endwith %}
     {% else %}
-        {% with status="Active" %}
-        <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Profile Status: {{ status }}</h5>
+    {% with status="Active" %}
+    <div class="card-header custom-card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Profile Status: {{ status }}</h5>
+        <div class="ml-auto d-flex align-items-center">
+            {% load static %}
+            <a href="{% url 'patient-pdf' pk=patient.id %}" class="download-pdf-link">
+                <img src="{% static 'images/download.png' %}" alt="Download PDF" class="download-pdf-icon">
+            </a>
             <a href="{% url 'update-patient' patient_id=patient.id patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Edit</a>
         </div>
-        {% endwith %}
+    </div>
+    {% endwith %}
+    
     {% endif %}
     <div class="card-body" style="text-align: left; color: black;">
         <h5 class="card-title"><strong>Personal Information:</strong></h5>
@@ -37,15 +44,39 @@
             <h5 class="card-title"><strong>Medication Profile: </strong></h5>
             <ul style="list-style-type: none">
                 <li><strong>Profile: </strong>{{ patient.medication_profile.title}}</li>
-                <li><strong>Number of Medications: </strong>{{ patient.medication_profile.number_medications }}</li>
-                <li><strong>Active Issues: </strong>0</li>
+                <li><strong>Active Issues: </strong>{{ patient.medication_profile.issues }}</li>
             </ul>
             <h5 class="card-title"><strong>Medication List: </strong></h5>
             <ul style="list-style-type: none">
-                {% if medications %}
+                <div class="row" style="background-color: #333; color: white">
+                    <div class="col text-start">Medication name</div>
+                    <div class="col text-start">Actual dose (mg)</div>
+                    <div class="col text-start">Dose limit (mg)*</div>
+                    <div class="col text-start">Status</div>
+        
+                </div>
+                {% if medications_with_doses %}
                 <ul><strong>
-                    {% for medication in medications %}
-                        <li>{{ medication.medication_name }} - {{ medication.calculation_unit }}</li>
+                    {% for medication in medications_with_doses %}
+                    {% if forloop.counter|divisibleby:2 %}
+                        <div class="row" style="background-color: #fcffeb;">
+                    {% else %}
+                        <div class="row" style="background-color: #f2f2f2;">
+                    {% endif %}
+                            <div class="col text-start">{{ medication.medication_name }}</div>
+                            <div class="col text-start">{{ medication.dose }}</div>
+                            <div class="col text-start">{{ medication.calculated_dose|floatformat:1 }}</div>
+                            <div class="col text-start">
+                                {% if medication.dose > medication.calculated_dose  %}
+                                    <img src="{% static 'images/warning.png' %}" alt="Issues Detected" width="20" height="20">
+                                {% else %}
+                                    <img src="{% static 'images/ok.png' %}" alt="No Issues" width="20" height="20">
+                                {% endif %}
+                            </div>
+            
+                        </div>
+                        
+                        <div class="col text-start">
                     {% endfor %}
                 </strong></ul>
             {% else %}
@@ -54,7 +85,9 @@
             
             </ul>
         </p>
+        <p> *Note: The dose limit is calculated by taking the medication's dose limit in mg per dosing unit and multiplying by the dosing unit</p>
     </div>
 </div>
 <br><a href="/patient_list/" class="btn btn-primary custom-btn-primary">Back to Patient List</a>
+
 {% endblock %}

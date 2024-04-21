@@ -27,7 +27,7 @@
                             <a href="{% url 'discharge-patient' patient_id=patient.id %}" class="btn btn-primary custom-btn-secondary">Discharge</a>
                         </div>
                         <div class="col-md-auto">
-                            {% if patient.medication_profile.has_issues %}
+                            {% if patient.medication_profile.issues > 0 %}
                                 <img src="{% static 'images/warning.png' %}" alt="Issues Detected" width="40" height="40">
                             {% else %}
                                 <img src="{% static 'images/ok.png' %}" alt="No Issues" width="40" height="40">
@@ -47,20 +47,19 @@
                             <div class="row" style="background-color: #f2f2f2;">
                                 <div class="col text-start"><strong>Weight (kg): </strong>{{ patient.weight }}</div>
                                 <div class="col text-start"><strong>Med Profile: </strong>{{ patient.medication_profile.title }}</div>
-                                {% if patient.medication_profile.has_issues %}
-                                    <div class="col text-start"><strong>Warning </strong></div>
+                                {% if patient.medication_profile.issues > 0 %}
+                                    <div class="col text-start"><strong>Warning! </strong></div>
                                 {% else %}
                                     <div class="col text-start"><strong>No issues detected </strong></div>
                                 {% endif %}
                             </div>
                             <div class="row" style="background-color: #fffffff;">
                                 <div class="col text-start"><strong>Height (cm): </strong>{{ patient.height}}</div>
-                                <div class="col text-start"><strong>Number Meds: </strong>{{ patient.medication_profile.number_medications }}</div>
+                                <div class="col text-start"><strong>High Risk? </strong>{{ patient.medication_profile.has_high_risk_med }}</div>
                                 <div class="col text-start"></div>
                             </div>
                             <div class="row" style="background-color: #f2f2f2;">
                                 <div class="col text-start"><strong>BSA (m^2): </strong>{{ patient.calculate_bsa|floatformat:2 }}</div>
-                                <div class="col text-start"><strong>High Risk? </strong>{{ patient.medication_profile.has_high_risk_med }}</div>
                                 <div class="col text-start"></div>
                             </div>
             </div>
